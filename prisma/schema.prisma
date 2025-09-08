@@ -15,7 +15,60 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  name  String
-  email String  @unique
+  id             Int      @id @default(autoincrement())
+  nome           String
+  genero         String
+  dataNascimento DateTime
+  cpf            String   @unique
+  email          String   @unique
+  senha          String
+  status         Boolean  @default(true)  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  telefone       Telefone?
+  enderecos      Endereco[]
+  cartoes        Cartao[]
 }
+
+model Telefone {
+  id      Int    @id @default(autoincrement())
+  tipo    String
+  ddd     String
+  numero  String
+
+  userId  Int    @unique
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Endereco {
+  id              Int    @id @default(autoincrement())
+  nome            String
+  tipoEndereco    String
+  tipoResidencia  String
+  tipoLogradouro  String
+  logradouro      String
+  numero          String
+  bairro          String
+  cep             String
+  cidade          String
+  estado          String
+  pais            String
+  observacoes     String?
+
+  userId          Int
+  user            User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Cartao {
+  id        Int      @id @default(autoincrement())
+  numero         String
+  nome           String
+  bandeira       String
+  cvv            String
+  preferencial   Boolean @default(false) 
+
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+}
+
