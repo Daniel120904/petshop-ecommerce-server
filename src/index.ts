@@ -7,9 +7,11 @@ import userRoutes from "./routes/userRoutes";
 
 const app: Application = express();
 const prisma = new PrismaClient();
+const cors = require("cors");
 
 app.use(express.json());
 app.use(morgan("dev"));
+app.use(cors());
 
 app.use("/api", userRoutes);
 

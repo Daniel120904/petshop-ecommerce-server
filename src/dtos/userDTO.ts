@@ -87,3 +87,11 @@ export interface UpdateStatusUser {
   userId: number;
   status: boolean;
 }
+
+export interface GetUsersFiltresDto {
+  nome?: string;
+  cpf?: string;
+  email?: string;
+  telefone?: string;
+}
+

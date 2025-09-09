@@ -1,6 +1,6 @@
 import { PrismaClient } from "../generated/prisma";
 import bcrypt from "bcryptjs";
-import { CreateCartaoDto, CreateEnderecoDto, CreateTelefoneDto, CreateUserDto, UpdateCartaoPreferencial, UpdateEndereco, UpdateSenha, UpdateStatusUser, UpdateTelefoneDto, UpdateUserDto } from "../dtos/userDTO";
+import { CreateCartaoDto, CreateEnderecoDto, CreateTelefoneDto, CreateUserDto, GetUsersFiltresDto, UpdateCartaoPreferencial, UpdateEndereco, UpdateSenha, UpdateStatusUser, UpdateTelefoneDto, UpdateUserDto } from "../dtos/userDTO";
 
 const prisma = new PrismaClient();
 
@@ -74,7 +74,6 @@ export class UserService {
         id: true,
         nome: true,
         status: true,
-        telefone: { select: { id: true } },
       }
     })
   }
@@ -189,5 +188,63 @@ export class UserService {
       where: { id: userId },
     });
   }
+
+  async getUser(userId: number) {
+    return prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        telefone: true,
+        cartoes: true,
+        enderecos: true
+      }
+    });
+  }
+
+  async getEnderecos(userId: number) {
+    return prisma.endereco.findMany({
+      where: { userId: userId },
+    });
+  }
+
+  async getEndereco(enderecoId: number) {
+    return prisma.endereco.findUnique({
+      where: { id: enderecoId },
+    });
+  }
+
+  async getCartoes(userId: number) {
+    return prisma.cartao.findMany({
+      where: { userId: userId },
+    });
+  }
+
+  async getUsersFiltres(filters: GetUsersFiltresDto) {
+    const conditions: any[] = [];
+
+    if (filters.nome) {
+      conditions.push({ nome: { contains: filters.nome, mode: "insensitive" } });
+    }
+    if (filters.cpf) {
+      conditions.push({ cpf: filters.cpf });
+    }
+    if (filters.email) {
+      conditions.push({ email: { contains: filters.email, mode: "insensitive" } });
+    }
+    if (filters.telefone) {
+      conditions.push({
+        telefone: { numero: { contains: filters.telefone } },
+      });
+    }
+
+    return prisma.user.findMany({
+      where: conditions.length > 0 ? { OR: conditions } : {}, // se não tiver filtro, retorna todos
+      select: {
+        id: true,
+        nome: true,
+        status: true,
+      },
+    });
+  }
+
 
 }

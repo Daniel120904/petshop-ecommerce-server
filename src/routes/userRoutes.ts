@@ -19,6 +19,11 @@ router.put("/updateCartaoPreferencial", validateDto(userValidations.updateCartao
 router.put("/updateStatusUser", validateDto(userValidations.updateStatusUser), (req, res) => userController.updateStatusUser(req, res))
 
 router.get("/getUsers", (req, res) => userController.getUsers(req, res))
+router.get("/getUser", (req, res) => userController.getUser(req, res))
+router.get("/getEnderecos", (req, res) => userController.getEnderecos(req, res))
+router.get("/getEndereco", (req, res) => userController.getEndereco(req, res))
+router.get("/getCartoes", (req, res) => userController.getCartoes(req, res))
+router.get("/getUsersFiltres", (req, res) => userController.getUsersFiltres(req, res))
 
 router.delete("/deleteUser", (req, res) => userController.deleteUser(req, res))
 

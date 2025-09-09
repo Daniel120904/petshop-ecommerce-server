@@ -111,4 +111,11 @@ export const userValidations = {
         status: z.boolean(),
     }),
 
+    GetUsersFiltres: z.object({
+        nome: z.string().optional(),
+        cpf: z.string().optional(),
+        email: z.string().optional(),
+        telefone: z.string().optional(),
+    }),
+
 };

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { UserService } from "../services/userService";
+import { userValidations } from "../validations/userValidations";
 
 const userService = new UserService();
 
@@ -110,6 +111,61 @@ export class UserController {
       res.status(200).json("Usuário deletado");
     } catch (error: any) {
       res.status(400).json({ message: error.message });
+    }
+  }
+
+  async getUser(req: Request, res: Response) {
+    try {
+      const userId = Number(req.query.userId);
+      const user = await userService.getUser(userId);
+      res.status(200).json(user);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  async getEnderecos(req: Request, res: Response) {
+    try {
+      const userId = Number(req.query.userId);
+      const enderecos = await userService.getEnderecos(userId);
+      res.status(200).json(enderecos);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  async getEndereco(req: Request, res: Response) {
+    try {
+      const enderecoId = Number(req.query.enderecoId);
+      const endereco = await userService.getEndereco(enderecoId);
+      res.status(200).json(endereco);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  async getCartoes(req: Request, res: Response) {
+    try {
+      const userId = Number(req.query.userId);
+      const cartoes = await userService.getCartoes(userId);
+      res.status(200).json(cartoes);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  async getUsersFiltres(req: Request, res: Response) {
+    try {
+      const filters = userValidations.GetUsersFiltres.parse(req.query);
+
+      const users = await userService.getUsersFiltres(filters);
+
+      return res.status(200).json(users);
+    } catch (error: any) {
+      console.error(error);
+      return res.status(400).json({
+        message: error.message || "Erro ao buscar usuários",
+      });
     }
   }
 
