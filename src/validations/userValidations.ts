@@ -40,7 +40,7 @@ export const userValidations = {
         cidade: z.string(),
         estado: z.string(),
         pais: z.string(),
-        observacoes: z.string(),
+        observacoes: z.string().optional(),
         userId: z.number(),
     }),
 

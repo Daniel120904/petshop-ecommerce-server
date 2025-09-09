@@ -7,6 +7,9 @@ const prisma = new PrismaClient();
 export class UserService {
 
   async createUser(data: CreateUserDto) {
+
+    const hashedPassword = await bcrypt.hash(data.senha, 10);
+
     return prisma.user.create({
       data: {
         nome: data.nome,
@@ -14,7 +17,7 @@ export class UserService {
         dataNascimento: new Date(data.dataNascimento),
         cpf: data.cpf,
         email: data.email,
-        senha: data.senha,
+        senha: hashedPassword,
       },
     });
   }
@@ -46,7 +49,7 @@ export class UserService {
         cidade: data.cidade,
         estado: data.estado,
         pais: data.pais,
-        observacoes: data.observacoes,
+        observacoes: data.observacoes ?? "",
         user: {
           connect: { id: data.userId },
         },
@@ -112,19 +115,49 @@ export class UserService {
       throw new Error("Usuário não encontrado");
     }
 
-    if (data.senhaAtual !== user.senha) {
+    const senhaCorreta = await bcrypt.compare(data.senhaAtual, user.senha);
+    if (!senhaCorreta) {
       throw new Error("Senha atual incorreta");
     }
+
+    const hashedNovaSenha = await bcrypt.hash(data.novaSenha, 10);
 
     return prisma.user.update({
       where: { id: data.userId },
       data: {
-        senha: data.novaSenha
+        senha: hashedNovaSenha
       }
     })
   }
 
   async updateEndereco(data: UpdateEndereco) {
+
+    const endereco = await prisma.endereco.findUnique({
+      where: {id: data.enderecoId}
+    })
+
+    const enderecosCobranca = await prisma.endereco.findMany({
+      where: {
+        userId: endereco?.userId,
+        tipoEndereco: "Cobrança"
+      },
+    })
+    const enderecosEntrega = await prisma.endereco.findMany({
+      where: {
+        userId: endereco?.userId,
+        tipoEndereco: "Entrega"
+      },
+    })
+
+    if(data.tipoEndereco !== "Cobrança e Entrega"){
+      if(enderecosCobranca.length < 1){
+        throw new Error("Selecione pelomenos um endereço de cobrança");
+      }
+      if(enderecosEntrega.length < 1){
+        throw new Error("Selecione pelomenos um endereço de entrega");
+      }
+    }
+
     return prisma.endereco.update({
       where: { id: data.enderecoId },
       data: {
@@ -225,7 +258,7 @@ export class UserService {
       conditions.push({ nome: { contains: filters.nome, mode: "insensitive" } });
     }
     if (filters.cpf) {
-      conditions.push({ cpf: filters.cpf });
+      conditions.push({ cpf: { contains: filters.cpf, mode: "insensitive" } });
     }
     if (filters.email) {
       conditions.push({ email: { contains: filters.email, mode: "insensitive" } });
@@ -237,7 +270,7 @@ export class UserService {
     }
 
     return prisma.user.findMany({
-      where: conditions.length > 0 ? { OR: conditions } : {}, // se não tiver filtro, retorna todos
+      where: conditions.length > 0 ? { OR: conditions } : {},
       select: {
         id: true,
         nome: true,
