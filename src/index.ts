@@ -4,6 +4,8 @@ import morgan from "morgan";
 import { PrismaClient } from "../generated/prisma"; 
 
 import userRoutes from "./routes/userRoutes";
+import productRoutes from "./routes/productRoutes";
+import saleRoutes from "./routes/saleRoutes";
 
 const app: Application = express();
 const prisma = new PrismaClient();
@@ -14,6 +16,8 @@ app.use(morgan("dev"));
 app.use(cors());
 
 app.use("/api", userRoutes);
+app.use("/api", productRoutes);
+app.use("/api", saleRoutes);
 
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err);

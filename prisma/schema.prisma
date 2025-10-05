@@ -22,53 +22,152 @@ model User {
   cpf            String   @unique
   email          String   @unique
   senha          String
-  status         Boolean  @default(true)  
+  status         Boolean  @default(true)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  telefone       Telefone?
-  enderecos      Endereco[]
-  cartoes        Cartao[]
+  telefone  Telefone?
+  enderecos Endereco[]
+  cartoes   Cartao[]
+  cart      Cart?
+  sales     Sale[]
 }
 
 model Telefone {
-  id      Int    @id @default(autoincrement())
-  tipo    String
-  ddd     String
-  numero  String
+  id     Int    @id @default(autoincrement())
+  tipo   String
+  ddd    String
+  numero String
 
-  userId  Int    @unique
-  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Endereco {
-  id              Int    @id @default(autoincrement())
-  nome            String
-  tipoEndereco    String
-  tipoResidencia  String
-  tipoLogradouro  String
-  logradouro      String
-  numero          String
-  bairro          String
-  cep             String
-  cidade          String
-  estado          String
-  pais            String
-  observacoes     String?
+  id             Int     @id @default(autoincrement())
+  nome           String
+  tipoEndereco   String
+  tipoResidencia String
+  tipoLogradouro String
+  logradouro     String
+  numero         String
+  bairro         String
+  cep            String
+  cidade         String
+  estado         String
+  pais           String
+  observacoes    String?
 
-  userId          Int
-  user            User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sales  Sale[]
 }
 
 model Cartao {
-  id        Int      @id @default(autoincrement())
-  numero         String
-  nome           String
-  bandeira       String
-  cvv            String
-  preferencial   Boolean @default(false) 
+  id           Int     @id @default(autoincrement())
+  numero       String
+  nome         String
+  bandeira     String
+  cvv          String
+  preferencial Boolean @default(false)
 
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int
+
+  payments SalePayment[]
 }
 
+model Product {
+  id       Int    @id @default(autoincrement())
+  name     String
+  price    Float
+  image    String
+  quantity Int    @default(0)
+
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  subcategoryId Int
+  subcategory   Subcategory @relation(fields: [subcategoryId], references: [id], onDelete: Cascade)
+
+  cartItems CartItem[]
+  saleItems SaleItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  products Product[]
+}
+
+model Subcategory {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  products Product[]
+}
+
+model Cart {
+  id        Int        @id @default(autoincrement())
+  userId    Int        @unique
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        Int @id @default(autoincrement())
+  cartId    Int
+  productId Int
+  quantity  Int @default(1)
+
+  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+}
+
+model Sale {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  addressId  Int
+  couponId   Int?
+  totalValue Float
+  createdAt  DateTime @default(now())
+
+  user     User          @relation(fields: [userId], references: [id])
+  address  Endereco      @relation(fields: [addressId], references: [id])
+  coupon   Coupon?       @relation(fields: [couponId], references: [id])
+  items    SaleItem[]
+  payments SalePayment[]
+}
+
+model SaleItem {
+  id        Int   @id @default(autoincrement())
+  saleId    Int
+  productId Int
+  quantity  Int
+  price     Float
+
+  sale    Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model SalePayment {
+  id     Int   @id @default(autoincrement())
+  saleId Int
+  cardId Int
+  amount Float
+
+  sale Sale   @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  card Cartao @relation(fields: [cardId], references: [id])
+}
+
+model Coupon {
+  id                 Int    @id @default(autoincrement())
+  code               String @unique
+  discountPercentage Int
+
+  sales Sale[]
+}
