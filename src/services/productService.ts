@@ -8,6 +8,7 @@ export class ProductService {
 
     async getProducts() {
         return prisma.product.findMany({
+            where: {quantity: {gt: 0}},
             select: {
                 id: true,
                 name: true,
