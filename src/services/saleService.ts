@@ -67,8 +67,16 @@ export class SaleService {
         const sales = await prisma.sale.findMany({
             where: {userId: this.MOCK_USER_ID},
             include:{
-                payments: true,
-                items: true,
+                payments: {
+                    include: {
+                        card: true,
+                    }
+                },
+                items: {
+                    include:{
+                        product: true
+                    }
+                },
             }
         })
 
