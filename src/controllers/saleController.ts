@@ -21,4 +21,13 @@ export class SaleController {
       return res.status(400).json({ message: error.message })
     }
   }
+
+  async getCoupon(req: Request, res: Response) {
+    try {
+      const coupon = await saleService.getCupon(req.query.coupon as string)
+      return res.status(200).json(coupon)
+    } catch (error: any) {
+      return res.status(400).json({ message: error.message })
+    }
+  }
 }

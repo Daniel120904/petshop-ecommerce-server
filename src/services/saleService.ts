@@ -63,23 +63,34 @@ export class SaleService {
         return sale
     }
 
-    async getSalesUser(){
+    async getSalesUser() {
         const sales = await prisma.sale.findMany({
-            where: {userId: this.MOCK_USER_ID},
-            include:{
+            where: { userId: this.MOCK_USER_ID },
+            orderBy: {
+                createdAt: 'desc',
+            },
+            include: {
                 payments: {
                     include: {
                         card: true,
                     }
                 },
                 items: {
-                    include:{
+                    include: {
                         product: true
                     }
                 },
-            }
+            },
         })
 
         return sales
+    }
+
+    async getCupon(code: string) {
+        const cupon = await prisma.coupon.findFirst({
+            where: { code: { equals: code } }
+        })
+
+        return cupon
     }
 }
