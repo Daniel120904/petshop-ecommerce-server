@@ -1,4 +1,4 @@
-import { CreateSaleInput } from "../dtos/saleDto";
+import { CreateSaleInput, GetSales, updateStatusSale } from "../dtos/saleDto";
 import { PrismaClient } from "../generated/prisma";
 
 const prisma = new PrismaClient();
@@ -6,8 +6,8 @@ const prisma = new PrismaClient();
 export class SaleService {
     private readonly MOCK_USER_ID = 20;
 
-    async createSale(input: CreateSaleInput) {
-        const { addressId, couponCode, payments } = input
+    async createSale(req: CreateSaleInput) {
+        const { addressId, couponCode, payments } = req
 
         const cart = await prisma.cart.findUnique({
             where: { userId: this.MOCK_USER_ID },
@@ -37,6 +37,7 @@ export class SaleService {
                 addressId,
                 couponId,
                 totalValue,
+                status: "processamento",
                 items: {
                     create: cart.items.map(item => ({
                         productId: item.productId,
@@ -92,5 +93,54 @@ export class SaleService {
         })
 
         return cupon
+    }
+
+    async getSales(req: GetSales) {
+        const { dataStart, dataEnd } = req
+
+        const where: any = {}
+
+        if (dataStart && dataEnd) {
+            where.createdAt = {
+                gte: dataStart,
+                lte: dataEnd,
+            }
+        } else if (dataStart) {
+            where.createdAt = {
+                gte: dataStart,
+            }
+        } else if (dataEnd) {
+            where.createdAt = {
+                lte: dataEnd,
+            }
+        }
+
+        const sales = await prisma.sale.findMany({
+            where,
+            orderBy: {
+                createdAt: 'desc',
+            },
+            select: {
+                id: true,
+                user: {
+                    select: { nome: true },
+                },
+                createdAt: true,
+                status: true,
+            },
+        })
+
+        return sales
+    }
+
+    async updateStatusSale(req: updateStatusSale) {
+        const sale = await prisma.sale.update({
+            where: { id: req.id },
+            data: {
+                status: req.status
+            }
+        })
+
+        return sale
     }
 }

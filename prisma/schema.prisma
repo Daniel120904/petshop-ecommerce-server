@@ -134,6 +134,7 @@ model Sale {
   addressId  Int
   couponId   Int?
   totalValue Float
+  status     String   @default("processamento")
   createdAt  DateTime @default(now())
 
   user     User          @relation(fields: [userId], references: [id])
