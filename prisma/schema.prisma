@@ -167,8 +167,9 @@ model SalePayment {
 
 model Coupon {
   id                 Int    @id @default(autoincrement())
-  code               String @unique
-  discountPercentage Int
+  code               String? @unique
+  discountPercentage Int?
+  discountValue      Float?
 
   sales Sale[]
 }

@@ -3,11 +3,17 @@ import { ZodSchema } from "zod";
 
 export const validateDto = (schema: ZodSchema) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    const result = schema.safeParse(req.body);
+    const data = req.method === "GET" ? req.query : req.body;
+    const result = schema.safeParse(data);
     if (!result.success) {
       return res.status(400).json(result.error.format());
     }
-    req.body = result.data;
+    if (req.method === "GET") {
+      Object.assign(req.query, result.data);
+    } else {
+      req.body = result.data;
+    }
+
     next();
   };
 };

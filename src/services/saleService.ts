@@ -27,6 +27,7 @@ export class SaleService {
         if (couponCode) {
             const coupon = await prisma.coupon.findUnique({ where: { code: couponCode } })
             if (!coupon) throw new Error('Cupom inválido')
+            if (!coupon.discountPercentage) throw new Error('Cupom inválido')
             totalValue = totalValue * (1 - coupon.discountPercentage / 100)
             couponId = coupon.id
         }
@@ -96,51 +97,76 @@ export class SaleService {
     }
 
     async getSales(req: GetSales) {
-        const { dataStart, dataEnd } = req
+        const { dataStart, dataEnd } = req;
 
-        const where: any = {}
+        const where: any = {};
 
         if (dataStart && dataEnd) {
             where.createdAt = {
-                gte: dataStart,
-                lte: dataEnd,
-            }
+                gte: new Date(dataStart),
+                lte: new Date(dataEnd),
+            };
         } else if (dataStart) {
             where.createdAt = {
-                gte: dataStart,
-            }
+                gte: new Date(dataStart),
+            };
         } else if (dataEnd) {
             where.createdAt = {
-                lte: dataEnd,
-            }
+                lte: new Date(dataEnd),
+            };
         }
 
         const sales = await prisma.sale.findMany({
             where,
-            orderBy: {
-                createdAt: 'desc',
-            },
+            orderBy: { createdAt: "desc" },
             select: {
                 id: true,
-                user: {
-                    select: { nome: true },
-                },
+                user: { select: { nome: true } },
                 createdAt: true,
                 status: true,
             },
-        })
+        });
 
-        return sales
+        return sales;
     }
 
     async updateStatusSale(req: updateStatusSale) {
-        const sale = await prisma.sale.update({
+        const sale = await prisma.sale.findUnique({
+            where: { id: req.id },
+            include: {
+                items: true
+            }
+        })
+
+        if (!sale) {
+            throw new Error("Venda não encontrada");
+        }
+
+        await prisma.sale.update({
             where: { id: req.id },
             data: {
                 status: req.status
             }
         })
 
-        return sale
+        if (req.status == "trocaAutorizada") {
+            let discountValue = 0
+            for (const item of sale.items) {
+                await prisma.product.update({
+                    where: {id: item.productId},
+                    data: {
+                        quantity: + item.quantity
+                    },
+                })
+                discountValue += item.price
+            }
+            await prisma.coupon.create({
+                data: {
+                    discountValue: discountValue
+                }
+            })
+        }
+
+        return "Status atualizado"
     }
 }

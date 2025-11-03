@@ -34,12 +34,19 @@ export class SaleController {
 
   async getSales(req: Request, res: Response) {
     try {
-      const sales = await saleService.getSales(req.body)
+      const { dataStart, dataEnd } = req.query as any
+      const reqService: GetSales = {
+        dataStart,
+        dataEnd,
+      }
+      const sales = await saleService.getSales(reqService)
       return res.status(200).json(sales)
     } catch (error: any) {
+      console.error("Erro em getSales:", error)
       return res.status(400).json({ message: error.message })
     }
   }
+
 
   async updateStatusSale(req: Request, res: Response) {
     try {
