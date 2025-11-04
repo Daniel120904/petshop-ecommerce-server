@@ -1,5 +1,6 @@
 import { CreateSaleInput, GetSales, updateStatusSale } from "../dtos/saleDto";
 import { PrismaClient } from "../generated/prisma";
+import { generateCouponCode } from "../utils/generateCuponCode";
 
 const prisma = new PrismaClient();
 
@@ -162,7 +163,8 @@ export class SaleService {
             }
             await prisma.coupon.create({
                 data: {
-                    discountValue: discountValue
+                    discountValue: discountValue,
+                    code: generateCouponCode()
                 }
             })
         }
