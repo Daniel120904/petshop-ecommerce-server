@@ -9,6 +9,7 @@ const saleController = new SaleController()
 router.get("/getSalesUser", (req, res) => saleController.getSalesUser(req, res))
 router.get("/getCoupon", (req, res) => saleController.getCoupon(req, res))
 router.get("/getSales", validateDto(saleValidations.getSales), (req, res) => saleController.getSales(req, res))
+router.get("/getSalesByCategory", (req, res) => saleController.getSalesByCategory(req, res))
 
 router.post("/createSale", validateDto(saleValidations.createSale), (req, res) => saleController.createSale(req, res))
 

@@ -30,4 +30,13 @@ export class ProductController {
       return res.status(400).json({ message: error.message })
     }
   }
+
+  async getCategories(req: Request, res: Response) {
+    try {
+      const categories = await productService.getCategories()
+      return res.status(200).json(categories)
+    } catch (error: any) {
+      return res.status(400).json({ message: error.message })
+    }
+  }
 }

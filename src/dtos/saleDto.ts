@@ -13,3 +13,9 @@ export interface updateStatusSale {
   id: number
   status: string
 }
+
+export interface getSalesByCategory {
+  dataStart?: string
+  dataEnd?: string
+  categoryId: number
+}

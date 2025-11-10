@@ -105,4 +105,13 @@ export class ProductService {
         }
     }
 
+    async getCategories() {
+        return prisma.category.findMany({
+            select: {
+                id: true,
+                name: true,
+            }
+        })
+    }
+
 }

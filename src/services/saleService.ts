@@ -1,4 +1,4 @@
-import { CreateSaleInput, GetSales, updateStatusSale } from "../dtos/saleDto";
+import { CreateSaleInput, GetSales, getSalesByCategory, updateStatusSale } from "../dtos/saleDto";
 import { PrismaClient } from "../generated/prisma";
 import { generateCouponCode } from "../utils/generateCuponCode";
 
@@ -154,7 +154,7 @@ export class SaleService {
             let discountValue = 0
             for (const item of sale.items) {
                 await prisma.product.update({
-                    where: {id: item.productId},
+                    where: { id: item.productId },
                     data: {
                         quantity: + item.quantity
                     },
@@ -171,4 +171,57 @@ export class SaleService {
 
         return "Status atualizado"
     }
+
+    async getSalesByCategory(req: getSalesByCategory) {
+        const { dataStart, dataEnd, categoryId } = req;
+        
+        const where: any = {
+            items: {
+                some: {
+                    product: {
+                        categoryId: categoryId
+                    }
+                }
+            }
+        };
+
+        if (dataStart && dataEnd) {
+            where.createdAt = {
+                gte: new Date(dataStart),
+                lte: new Date(dataEnd),
+            };
+        } else if (dataStart) {
+            where.createdAt = { gte: new Date(dataStart) };
+        } else if (dataEnd) {
+            where.createdAt = { lte: new Date(dataEnd) };
+        }
+
+        const sales = await prisma.sale.findMany({
+            where,
+            orderBy: { createdAt: "desc" },
+            select: {
+                id: true,
+                user: { select: { nome: true } },
+                createdAt: true,
+                status: true,
+                items: {
+                    select: {
+                        quantity: true,
+                        price: true,
+                        product: {
+                            select: {
+                                name: true,
+                                category: {
+                                    select: { name: true }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        return sales;
+    }
+
 }

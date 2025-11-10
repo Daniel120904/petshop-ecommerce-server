@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { SaleService } from "../services/saleService";
-import { GetSales } from "../dtos/saleDto";
+import { GetSales, getSalesByCategory } from "../dtos/saleDto";
 
 const saleService = new SaleService()
 
@@ -47,11 +47,23 @@ export class SaleController {
     }
   }
 
-
   async updateStatusSale(req: Request, res: Response) {
     try {
       await saleService.updateStatusSale(req.body)
       return res.status(200).json("status atualizado")
+    } catch (error: any) {
+      return res.status(400).json({ message: error.message })
+    }
+  }
+
+  async getSalesByCategory(req: Request, res: Response) {
+    try {
+      const dataStart = req.query.dataStart as string
+      const dataEnd = req.query.dataEnd as string
+      const categoryId = Number(req.query.categoryId)
+      const reqService: getSalesByCategory = {dataStart, dataEnd, categoryId}
+      const sales = await saleService.getSalesByCategory(reqService)
+      return res.status(200).json(sales)
     } catch (error: any) {
       return res.status(400).json({ message: error.message })
     }
