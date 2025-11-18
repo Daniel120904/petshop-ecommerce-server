@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { ProductService } from "../services/productService";
+import { PrismaClient } from "../generated/prisma";
 
+const prisma = new PrismaClient();
 const productService = new ProductService()
 
 export class ProductController {
@@ -35,6 +37,15 @@ export class ProductController {
     try {
       const categories = await productService.getCategories()
       return res.status(200).json(categories)
+    } catch (error: any) {
+      return res.status(400).json({ message: error.message })
+    }
+  }
+
+  async getAiRecommendation(req: Request, res: Response) {
+    try {
+      const message = await productService.getAiRecommendation(req.body)
+      return res.status(200).json(message)
     } catch (error: any) {
       return res.status(400).json({ message: error.message })
     }

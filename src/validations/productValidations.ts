@@ -5,4 +5,8 @@ export const productValidations = {
         action: z.enum(["more", "less"]),
         item: z.number().int(),
     }),
+
+    getAiRecommendation: z.object({
+        message: z.string()
+    }),
 }
