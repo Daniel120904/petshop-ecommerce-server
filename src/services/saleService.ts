@@ -8,7 +8,7 @@ export class SaleService {
     private readonly MOCK_USER_ID = 20;
 
     async createSale(req: CreateSaleInput) {
-        const { addressId, couponCode, payments } = req
+        const { addressId, payments } = req
 
         const cart = await prisma.cart.findUnique({
             where: { userId: this.MOCK_USER_ID },
@@ -24,20 +24,10 @@ export class SaleService {
             0
         )
 
-        let couponId: number | null = null
-        if (couponCode) {
-            const coupon = await prisma.coupon.findUnique({ where: { code: couponCode } })
-            if (!coupon) throw new Error('Cupom inválido')
-            if (!coupon.discountPercentage) throw new Error('Cupom inválido')
-            totalValue = totalValue * (1 - coupon.discountPercentage / 100)
-            couponId = coupon.id
-        }
-
         const sale = await prisma.sale.create({
             data: {
                 userId: this.MOCK_USER_ID,
                 addressId,
-                couponId,
                 totalValue,
                 status: "processamento",
                 items: {
@@ -172,14 +162,16 @@ export class SaleService {
         return "Status atualizado"
     }
 
-    async getSalesByCategory(req: getSalesByCategory) {
-        const { dataStart, dataEnd, categoryId } = req;
-        
+    async getSalesByCategories(req: getSalesByCategory) {
+        const { dataStart, dataEnd, categoriesId } = req;
+
         const where: any = {
             items: {
                 some: {
                     product: {
-                        categoryId: categoryId
+                        categoryId: {
+                            in: categoriesId,
+                        }
                     }
                 }
             }

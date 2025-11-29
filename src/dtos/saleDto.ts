@@ -1,6 +1,5 @@
 export interface CreateSaleInput {
   addressId: number
-  couponCode?: string 
   payments?: { cardId: number; amount: number }[]
 }
 
@@ -17,5 +16,5 @@ export interface updateStatusSale {
 export interface getSalesByCategory {
   dataStart?: string
   dataEnd?: string
-  categoryId: number
+  categoriesId: string[]
 }

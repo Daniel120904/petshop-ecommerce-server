@@ -56,13 +56,14 @@ export class SaleController {
     }
   }
 
-  async getSalesByCategory(req: Request, res: Response) {
+  async getSalesByCategories(req: Request, res: Response) {
     try {
       const dataStart = req.query.dataStart as string
       const dataEnd = req.query.dataEnd as string
-      const categoryId = Number(req.query.categoryId)
-      const reqService: getSalesByCategory = {dataStart, dataEnd, categoryId}
-      const sales = await saleService.getSalesByCategory(reqService)
+      let categoriesId = req.query.categoriesId as string 
+      const categoriesIdArray = JSON.parse(categoriesId)
+      const reqService: getSalesByCategory = { dataStart, dataEnd, categoriesId: categoriesIdArray }
+      const sales = await saleService.getSalesByCategories(reqService)
       return res.status(200).json(sales)
     } catch (error: any) {
       return res.status(400).json({ message: error.message })

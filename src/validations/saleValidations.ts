@@ -22,7 +22,6 @@ export const saleValidations = {
 
     createSale: z.object({
         addressId: z.number(),
-        couponCode: z.string().optional(),
         payments: z.array(
             z.object({
                 cardId: z.number(),
