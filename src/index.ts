@@ -1,7 +1,7 @@
 import "dotenv/config";
 import express, { Application } from "express";
 import morgan from "morgan";
-import { PrismaClient } from "../generated/prisma"; 
+import { PrismaClient } from "./generated/prisma"; 
 
 import userRoutes from "./routes/userRoutes";
 import productRoutes from "./routes/productRoutes";
