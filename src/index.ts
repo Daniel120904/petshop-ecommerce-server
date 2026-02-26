@@ -6,6 +6,7 @@ import { PrismaClient } from "./generated/prisma";
 import userRoutes from "./routes/userRoutes";
 import productRoutes from "./routes/productRoutes";
 import saleRoutes from "./routes/saleRoutes";
+import authMiddleware from "./core/auth/auth.middleware";
 
 const app: Application = express();
 const prisma = new PrismaClient();
@@ -14,6 +15,9 @@ const cors = require("cors");
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cors());
+
+app.use(authMiddleware.authenticate); 
+app.use(authMiddleware.requirePermissions());
 
 app.use("/api", userRoutes);
 app.use("/api", productRoutes);
