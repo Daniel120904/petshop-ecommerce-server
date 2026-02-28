@@ -22,7 +22,6 @@ class AuthMiddleware {
 
             if (!authHeader || !authHeader.startsWith('Bearer ')) {
                 return res.status(401).json({
-                    success: false,
                     message: 'Token não fornecido',
                 });
             }
@@ -39,7 +38,6 @@ class AuthMiddleware {
             next();
         } catch (error) {
             return res.status(401).json({
-                success: false,
                 message: 'Token inválido ou expirado',
             });
         }
@@ -51,7 +49,6 @@ class AuthMiddleware {
 
             if (!user) {
                 return res.status(401).json({
-                    success: false,
                     message: 'Usuário não autenticado',
                 });
             }
@@ -65,7 +62,9 @@ class AuthMiddleware {
             });
 
             if (!hasAccess) {
-                return res.status(403).json({ success: false, message: 'Sem permissão' });
+                return res.status(403).json({ 
+                    message: 'Sem permissão' 
+                });
             }
 
             next();
@@ -78,7 +77,6 @@ class AuthMiddleware {
 
             if (!user) {
                 return res.status(401).json({
-                    success: false,
                     message: 'Usuário não autenticado',
                 });
             }
@@ -89,14 +87,12 @@ class AuthMiddleware {
 
             if (!resource) {
                 return res.status(404).json({ 
-                    success: false,
                     message: 'Recurso não encontrado' 
                 });
             }
 
             if (resource.userId !== user.userId) {
                 return res.status(403).json({ 
-                    success: false, 
                     message: 'Você não tem permissão para acessar este recurso' 
                 });
             }

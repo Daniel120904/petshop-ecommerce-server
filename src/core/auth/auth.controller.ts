@@ -11,7 +11,6 @@ class AuthController {
 
             if (!email || !password) {
                 return res.status(400).json({
-                    success: false,
                     message: 'Email e senha são obrigatórios',
                 });
             }
@@ -19,12 +18,10 @@ class AuthController {
             const result = await authService.login({ email, password });
 
             return res.status(200).json({
-                success: true,
                 data: result,
             });
         } catch (error: any) {
             return res.status(401).json({
-                success: false,
                 message: error.message || 'Erro ao fazer login',
             });
         }
@@ -36,7 +33,6 @@ class AuthController {
 
             if (!refreshToken) {
                 return res.status(400).json({
-                    success: false,
                     message: 'Refresh token é obrigatório',
                 });
             }
@@ -44,12 +40,10 @@ class AuthController {
             const result = await authService.refreshAccessToken(refreshToken);
 
             return res.status(200).json({
-                success: true,
                 data: result,
             });
         } catch (error: any) {
             return res.status(401).json({
-                success: false,
                 message: error.message || 'Erro ao renovar token',
             });
         }
@@ -61,7 +55,6 @@ class AuthController {
 
             if (!user) {
                 return res.status(401).json({
-                    success: false,
                     message: 'Usuário não autenticado',
                 });
             }
@@ -69,12 +62,10 @@ class AuthController {
             await authService.logout(user.userId);
 
             return res.status(200).json({
-                success: true,
                 message: 'Logout realizado com sucesso',
             });
         } catch (error: any) {
             return res.status(500).json({
-                success: false,
                 message: error.message || 'Erro ao fazer logout',
             });
         }
@@ -86,18 +77,15 @@ class AuthController {
 
             if (!user) {
                 return res.status(401).json({
-                    success: false,
                     message: 'Usuário não autenticado',
                 });
             }
 
             return res.status(200).json({
-                success: true,
                 data: user,
             });
         } catch (error: any) {
             return res.status(500).json({
-                success: false,
                 message: error.message || 'Erro ao buscar dados do usuário',
             });
         }
@@ -109,7 +97,6 @@ class AuthController {
 
             if (!email || !password || !name) {
                 return res.status(400).json({
-                    success: false,
                     message: 'Email, senha e nome são obrigatórios',
                 });
             }
@@ -120,7 +107,6 @@ class AuthController {
 
             if (existingUser) {
                 return res.status(400).json({
-                    success: false,
                     message: 'Email já cadastrado',
                 });
             }
@@ -137,7 +123,6 @@ class AuthController {
             });
 
             return res.status(201).json({
-                success: true,
                 message: 'Usuário criado com sucesso',
                 data: {
                     id: newUser.id,
@@ -147,7 +132,6 @@ class AuthController {
             });
         } catch (error: any) {
             return res.status(500).json({
-                success: false,
                 message: error.message || 'Erro ao criar usuário',
             });
         }
