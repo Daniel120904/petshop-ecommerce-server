@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import authService from './auth.service';
+import { PrismaClient } from '../../generated/prisma';
 
 const prisma = new PrismaClient();
 
@@ -93,40 +93,54 @@ class AuthController {
 
     async register(req: Request, res: Response) {
         try {
-            const { email, password, name } = req.body;
+            const { email, password, name, cpf, dataNascimento, genderId, roleId } = req.body;
 
-            if (!email || !password || !name) {
+            if (!email || !password || !name || !cpf || !dataNascimento || !genderId || !roleId) {
                 return res.status(400).json({
-                    message: 'Email, senha e nome são obrigatórios',
+                    message: 'Email, senha, nome, cpf, dataNascimento, genderId e roleId são obrigatórios',
                 });
             }
 
-            const existingUser = await prisma.user.findUnique({
+            const existingAuth = await prisma.authentication.findUnique({
                 where: { email },
             });
 
+            if (existingAuth) {
+                return res.status(400).json({ message: 'Email já cadastrado' });
+            }
+
+            const existingUser = await prisma.user.findUnique({
+                where: { cpf },
+            });
+
             if (existingUser) {
-                return res.status(400).json({
-                    message: 'Email já cadastrado',
-                });
+                return res.status(400).json({ message: 'CPF já cadastrado' });
             }
 
             const hashedPassword = await authService.hashPassword(password);
 
             const newUser = await prisma.user.create({
                 data: {
-                    email,
-                    password: hashedPassword,
                     name,
-                    active: true,
+                    cpf,
+                    dataNascimento: new Date(dataNascimento),
+                    genderId,
+                    roleId,
+                    authentication: {
+                        create: {
+                            email,
+                            password: hashedPassword,
+                        },
+                    },
                 },
+                include: { authentication: true },
             });
 
             return res.status(201).json({
                 message: 'Usuário criado com sucesso',
                 data: {
                     id: newUser.id,
-                    email: newUser.email,
+                    email: newUser.authentication?.email,
                     name: newUser.name,
                 },
             });

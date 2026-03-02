@@ -1,12 +1,12 @@
 import "dotenv/config";
 import express, { Application } from "express";
 import morgan from "morgan";
-import { PrismaClient } from "./generated/prisma"; 
 
 import userRoutes from "./routes/userRoutes";
 import productRoutes from "./routes/productRoutes";
 import saleRoutes from "./routes/saleRoutes";
 import authMiddleware from "./core/auth/auth.middleware";
+import { PrismaClient } from "./generated/prisma";
 
 const app: Application = express();
 const prisma = new PrismaClient();

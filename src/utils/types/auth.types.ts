@@ -1,7 +1,7 @@
 import { PermissionLevel } from "../constants/permission.constants";
 
 export interface TokenPayload {
-    userId: string;
+    userId: number;
     email: string;
     permission: PermissionLevel;
 }
@@ -21,7 +21,7 @@ export interface AuthResponse {
     accessToken: string;
     refreshToken: string;
     user: {
-        id: string;
+        id: number;
         email: string;
         username: string;
         permission: PermissionLevel;

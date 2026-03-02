@@ -1,6 +1,6 @@
-import { PrismaClient } from "../generated/prisma";
 import bcrypt from "bcryptjs";
 import { CreateCartaoDto, CreateEnderecoDto, CreateTelefoneDto, CreateUserDto, GetUsersFiltresDto, UpdateCartaoPreferencial, UpdateEndereco, UpdateSenha, UpdateStatusUser, UpdateTelefoneDto, UpdateUserDto } from "../dtos/userDTO";
+import { PrismaClient } from "../generated/prisma";
 
 const prisma = new PrismaClient();
 

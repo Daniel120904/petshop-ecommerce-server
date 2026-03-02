@@ -1,10 +1,10 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { PrismaClient } from '@prisma/client';
 import { jwtConfig } from '../../config/jwt.config';
 import { TokenPayload, LoginCredentials } from '../../utils/types/auth.types';
 import { includes } from 'zod';
 import { PermissionLevel } from '../../utils/constants/permission.constants';
+import { PrismaClient } from '../../generated/prisma';
 
 const prisma = new PrismaClient();
 
@@ -40,44 +40,48 @@ class AuthService {
 
     async login(credentials: LoginCredentials): Promise<{ accessToken: string; refreshToken: string; user: any }> {
         try {
-            const user = await prisma.user.findUnique({
+            const auth = await prisma.authentication.findUnique({
                 where: { email: credentials.email },
-                includes: { role: true }
+                include: {
+                    user: {
+                        include: { role: true }
+                    }
+                }
             });
 
-            if (!user) throw new Error('Credenciais inválidas');
-        
-            const isPasswordValid = await this.comparePassword(credentials.password, user.password);
+            if (!auth) throw new Error('Credenciais inválidas');
 
+            const isPasswordValid = await this.comparePassword(credentials.password, auth.password);
             if (!isPasswordValid) throw new Error('Credenciais inválidas');
-       
-            if (user.active === false) throw new Error('Usuário inativo');
 
-            const permission = await this.resolvePermission(user.role?.name);
+            if (auth.active === false) throw new Error('Usuário inativo');
+            if (auth.blocked === true) throw new Error('Usuário bloqueado');
+
+            const permission = this.resolvePermission(auth.user.role?.name);
 
             const tokenPayload: TokenPayload = {
-                userId: user.id,
-                email: user.email,
-                permission: permission,
+                userId: auth.user.id, 
+                email: auth.email,
+                permission,
             };
 
             const accessToken = this.generateAccessToken(tokenPayload);
             const refreshToken = this.generateRefreshToken(tokenPayload);
 
-            await this.saveRefreshToken(user.id, refreshToken);
+            await this.saveRefreshToken(auth.user.id, refreshToken);
 
             return {
                 accessToken,
                 refreshToken,
                 user: {
-                    id: user.id,
-                    email: user.email,
-                    name: user.name,
+                    id: auth.user.id,
+                    email: auth.email,
+                    name: auth.user.name,
                     permission,
                 },
             };
         } catch (error) {
-            console.error('Erro no login:', error);
+            console.error('Erro no login: ', error);
             throw error;
         }
     }
@@ -100,7 +104,7 @@ class AuthService {
         }
     }
 
-    async logout(userId: string): Promise<void> {
+    async logout(userId: number): Promise<void> {
         await this.invalidateRefreshToken(userId);
     }
 
@@ -115,8 +119,8 @@ class AuthService {
         return map[roleName.toLowerCase()] ?? PermissionLevel.PUBLIC;
     }
 
-    private async saveRefreshToken(userId: string, refreshToken: string): Promise<void> {
-        await prisma.refreshToken.create({
+    private async saveRefreshToken(userId: number, refreshToken: string): Promise<void> {
+        await prisma.refresh_token.create({
             data: {
                 userId: userId,
                 token: refreshToken,
@@ -125,8 +129,8 @@ class AuthService {
         });
     }
 
-    private async validateRefreshToken(userId: string, refreshToken: string): Promise<boolean> {
-        const token = await prisma.refreshToken.findFirst({
+    private async validateRefreshToken(userId: number, refreshToken: string): Promise<boolean> {
+        const token = await prisma.refresh_token.findFirst({
             where: { 
                 userId: userId, 
                 token: refreshToken 
@@ -138,15 +142,15 @@ class AuthService {
         }
 
         if (new Date(token.expiresAt) < new Date()) {
-            await prisma.refreshToken.delete({ where: { id: token.id } });
+            await prisma.refresh_token.delete({ where: { id: token.id } });
             return false;
         }
 
         return true;
     }
 
-    private async invalidateRefreshToken(userId: string): Promise<void> {
-        await prisma.refreshToken.deleteMany({
+    private async invalidateRefreshToken(userId: number): Promise<void> {
+        await prisma.refresh_token.deleteMany({
             where: { userId: userId },
         });
     }
