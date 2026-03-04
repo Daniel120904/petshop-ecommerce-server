@@ -7,9 +7,9 @@ export enum PermissionLevel {
 export const PERMISSIONS = {
     [PermissionLevel.PUBLIC]: {
         routes: [
-            { path: '/auth/login', methods: ['POST'] },
-            { path: '/auth/register', methods: ['POST'] },
-            { path: '/auth/refresh', methods: ['POST'] },
+            { path: '/login', methods: ['POST'] },
+            { path: '/register', methods: ['POST'] },
+            { path: '/refresh', methods: ['POST'] },
         ],
     },
     [PermissionLevel.USER]: {

@@ -5,6 +5,7 @@ import morgan from "morgan";
 import userRoutes from "./routes/userRoutes";
 import productRoutes from "./routes/productRoutes";
 import saleRoutes from "./routes/saleRoutes";
+import authRoutes from "./routes/auth.routes";
 import authMiddleware from "./core/auth/auth.middleware";
 import { PrismaClient } from "./generated/prisma";
 
@@ -16,12 +17,15 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use(cors());
 
-app.use(authMiddleware.authenticate); 
-app.use(authMiddleware.requirePermissions());
+app.use("/api",
+  authMiddleware.authenticate,
+  authMiddleware.requirePermissions()
+);
 
 app.use("/api", userRoutes);
 app.use("/api", productRoutes);
 app.use("/api", saleRoutes);
+app.use("/api", authRoutes);
 
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err);

@@ -17,10 +17,21 @@ declare global {
 
 class AuthMiddleware {
     async authenticate(req: Request, res: Response, next: NextFunction) {
+        console.log('req.path:', req.path); // <- adiciona isso
+        console.log('req.method:', req.method);
         try {
             const authHeader = req.headers.authorization;
 
             if (!authHeader || !authHeader.startsWith('Bearer ')) {
+                const publicRoutes = PERMISSIONS[PermissionLevel.PUBLIC].routes;
+
+                const isPublic = (publicRoutes as readonly { path: string; methods: readonly string[] }[]).some(route => {
+                    const { regexp } = pathToRegexp(route.path);
+                    return regexp.test(req.path) && route.methods.includes(req.method);
+                });
+
+                if (isPublic) return next();
+
                 return res.status(401).json({
                     message: 'Token não fornecido',
                 });
@@ -45,6 +56,19 @@ class AuthMiddleware {
 
     requirePermissions() {
         return async (req: Request, res: Response, next: NextFunction) => {
+            console.log('req.path:', req.path); // <- adiciona isso
+        console.log('req.method:', req.method);
+            const publicRoutes = PERMISSIONS[PermissionLevel.PUBLIC].routes;
+
+            const isPublic = (publicRoutes as readonly { path: string; methods: readonly string[] }[]).some(route => {
+                const { regexp } = pathToRegexp(route.path);
+                return regexp.test(req.path) && route.methods.includes(req.method);
+            });
+
+            if (isPublic) {
+                return next();
+            }
+
             const user = req.user;
 
             if (!user) {
@@ -53,10 +77,10 @@ class AuthMiddleware {
                 });
             }
 
-            const routes = PERMISSIONS[user.permission].routes;
-            if (routes === '*') return next();
+            const permission = PERMISSIONS[user.permission];
+            if (typeof permission.routes === 'string') return next();
 
-            const hasAccess = (routes as readonly { path: string; methods: readonly string[] }[]).some(route => {
+            const hasAccess = (permission.routes as readonly { path: string; methods: readonly string[] }[]).some(route => {
                 const { regexp } = pathToRegexp(route.path);
                 return regexp.test(req.path) && route.methods.includes(req.method);
             });
