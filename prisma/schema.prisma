@@ -115,7 +115,7 @@ model role {
 model user {
   id             Int      @id @default(autoincrement())
   name           String
-  dataNascimento DateTime
+  birthday DateTime
   cpf            String   @unique @db.VarChar(11)
   isDelete       Boolean  @default(false)
   createdAt      DateTime @default(now())

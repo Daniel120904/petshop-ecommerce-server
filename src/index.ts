@@ -5,8 +5,8 @@ import morgan from "morgan";
 import userRoutes from "./routes/userRoutes";
 import productRoutes from "./routes/productRoutes";
 import saleRoutes from "./routes/saleRoutes";
-import authRoutes from "./routes/auth.routes";
-import authMiddleware from "./core/auth/auth.middleware";
+import authRoutes from "./core/auth/auth.routes";
+import authMiddleware from "./middlewares/auth.middleware";
 import { PrismaClient } from "./generated/prisma";
 
 const app: Application = express();

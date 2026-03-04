@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { SaleController } from "../controllers/saleController";
-import { validateDto } from "../middlewares/validationsMiddleware";
+import { validateDto } from "../middlewares/schema.middleware";
 import { saleValidations } from "../validations/saleValidations";
 
 const router = Router()

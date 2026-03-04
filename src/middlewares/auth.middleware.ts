@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import authService from './auth.service';
-import { PermissionLevel, PERMISSIONS } from '../../utils/constants/permission.constants';
+import authService from '../core/auth/auth.service';
+import { PermissionLevel, PERMISSIONS } from '../utils/constants/permission.constants';
 import { pathToRegexp } from 'path-to-regexp';
 
 declare global {
