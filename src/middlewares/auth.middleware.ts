@@ -17,7 +17,7 @@ declare global {
 
 class AuthMiddleware {
     async authenticate(req: Request, res: Response, next: NextFunction) {
-        console.log('req.path:', req.path); // <- adiciona isso
+        console.log('req.path:', req.path);
         console.log('req.method:', req.method);
         try {
             const authHeader = req.headers.authorization;
@@ -56,8 +56,6 @@ class AuthMiddleware {
 
     requirePermissions() {
         return async (req: Request, res: Response, next: NextFunction) => {
-            console.log('req.path:', req.path); // <- adiciona isso
-        console.log('req.method:', req.method);
             const publicRoutes = PERMISSIONS[PermissionLevel.PUBLIC].routes;
 
             const isPublic = (publicRoutes as readonly { path: string; methods: readonly string[] }[]).some(route => {

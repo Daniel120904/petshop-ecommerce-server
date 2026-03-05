@@ -18,6 +18,8 @@ export const PERMISSIONS = {
             { path: '/produtos/:id', methods: ['GET'] },
             { path: '/pedidos', methods: ['GET', 'POST'] },
             { path: '/perfil', methods: ['GET', 'PUT'] },
+            { path: '/me', methods: ['GET'] },
+            { path: '/logout', methods: ['POST'] },
         ],
     },
     [PermissionLevel.MASTER]: {

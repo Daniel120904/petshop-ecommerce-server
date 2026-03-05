@@ -11,7 +11,7 @@ router.post("/login", validateDto(authSchema.login), (req, res) => authControlle
 router.post("/register", validateDto(authSchema.register), (req, res) => authController.register(req, res));
 router.post("/refresh", validateDto(authSchema.refresh), (req, res) => authController.refresh(req, res));
 
-router.post("/logout", authMiddleware.authenticate, (req, res) => authController.logout(req, res));
-router.get("/me", authMiddleware.authenticate, (req, res) => authController.me(req, res));
+router.post("/logout", (req, res) => authController.logout(req, res));
+router.get("/me", (req, res) => authController.me(req, res));
 
 export default router;
