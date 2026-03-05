@@ -9,7 +9,7 @@ class RoleService {
             where: { name: roleName },
         });
 
-        if(!role) throw Error('Role não encontrada');
+        if(!role) throw new Error('Role não encontrada');
 
         return role;
     }

@@ -1,15 +1,19 @@
 import { z } from 'zod';
-import { validateCpf, validateBirthday, coerceId } from '../../shared/schemas';
+import { validateCpf, validateBirthday, coerceId, validatePassword } from '../../shared/schemas';
 
 export const authSchema = {
     login: z.object({
-        email: z.email('Email inválido'),
-        password: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
+        email: z.string(),
+        password: z.string(),
+        rememberMe: z.preprocess(
+            (val) => val === 'true' || val === true, 
+            z.boolean().default(false)
+        ),
     }),
 
     register: z.object({
         email: z.email('Email inválido'),
-        password: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
+        password: validatePassword(),
         name: z.string().min(3, 'Nome deve ter no mínimo 3 caracteres'),
         cpf: validateCpf(),
         birthday: validateBirthday(5),

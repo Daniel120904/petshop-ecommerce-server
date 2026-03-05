@@ -5,6 +5,7 @@ import { TokenPayload, LoginCredentials } from '../../utils/types/auth.types';
 import { includes } from 'zod';
 import { PermissionLevel } from '../../utils/constants/permission.constants';
 import { PrismaClient } from '../../generated/prisma';
+import ms from 'ms';
 
 const prisma = new PrismaClient();
 
@@ -15,9 +16,11 @@ class AuthService {
         });
     }
 
-    generateRefreshToken(payload: TokenPayload): string {
+    private generateRefreshToken(payload: TokenPayload, rememberMe = false): string {
         return jwt.sign(payload, jwtConfig.secret, {
-            expiresIn: jwtConfig.refreshTokenExpiration,
+            expiresIn: rememberMe 
+                ? jwtConfig.refreshTokenRememberMeExpiration 
+                : jwtConfig.refreshTokenExpiration,
         });
     }
 
@@ -66,9 +69,9 @@ class AuthService {
             };
 
             const accessToken = this.generateAccessToken(tokenPayload);
-            const refreshToken = this.generateRefreshToken(tokenPayload);
+            const refreshToken = this.generateRefreshToken(tokenPayload, credentials.rememberMe);
 
-            await this.saveRefreshToken(auth.user.id, refreshToken);
+            await this.saveRefreshToken(auth.user.id, refreshToken, credentials.rememberMe);
 
             return {
                 accessToken,
@@ -119,12 +122,16 @@ class AuthService {
         return map[roleName.toLowerCase()] ?? PermissionLevel.PUBLIC;
     }
 
-    private async saveRefreshToken(userId: number, refreshToken: string): Promise<void> {
+    private async saveRefreshToken(userId: number, refreshToken: string, rememberMe = false): Promise<void> {
         await prisma.refresh_token.create({
             data: {
                 userId: userId,
                 token: refreshToken,
-                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+                expiresAt: new Date(Date.now() + ms(
+                    rememberMe 
+                        ? jwtConfig.refreshTokenRememberMeExpiration 
+                        : jwtConfig.refreshTokenExpiration
+                )),
             },
         });
     }

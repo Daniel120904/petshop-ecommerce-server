@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 class AuthController {
     async login(req: Request, res: Response) {
         try {
-            const { email, password } = req.body;
+            const { email, password, rememberMe } = req.body;
 
             if (!email || !password) {
                 return res.status(400).json({
@@ -17,7 +17,7 @@ class AuthController {
                 });
             }
 
-            const result = await authService.login({ email, password });
+            const result = await authService.login({ email, password, rememberMe });
 
             return res.status(200).json({
                 data: result,
