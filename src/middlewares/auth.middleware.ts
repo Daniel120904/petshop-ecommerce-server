@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import authService from '../core/auth/auth.service';
+import authService from '../modules/auth/auth.service';
 import { PermissionLevel, PERMISSIONS } from '../utils/constants/permission.constants';
 import { pathToRegexp } from 'path-to-regexp';
 

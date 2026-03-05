@@ -5,7 +5,7 @@ import morgan from "morgan";
 import userRoutes from "./routes/userRoutes";
 import productRoutes from "./routes/productRoutes";
 import saleRoutes from "./routes/saleRoutes";
-import authRoutes from "./core/auth/auth.routes";
+import authRoutes from "./modules/auth/auth.routes";
 import authMiddleware from "./middlewares/auth.middleware";
 import { PrismaClient } from "./generated/prisma";
 

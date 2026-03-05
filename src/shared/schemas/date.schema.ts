@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const validateBirthday = (minAge: number) => z.string()
-    .regex(/^\d{2}-\d{2}-\d{4}$/, 'Data deve estar no formato DD-MM-YYYY')
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Data deve estar no formato YYYY-MM-DD')
     .refine((val) => {
         const [day, month, year] = val.split('-').map(Number);
         const birth = new Date(year, month - 1, day);

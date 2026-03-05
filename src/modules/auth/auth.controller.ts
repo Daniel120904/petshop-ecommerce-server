@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import authService from './auth.service';
 import { PrismaClient } from '../../generated/prisma';
+import { RoleName } from '../../utils/constants/role.constants';
+import roleService from '../role/role.service';
 
 const prisma = new PrismaClient();
 
@@ -93,11 +95,11 @@ class AuthController {
 
     async register(req: Request, res: Response) {
         try {
-            const { email, password, name, cpf, dataNascimento, genderId, roleId } = req.body;
+            const { email, password, name, cpf, birthday, genderId } = req.body;
 
-            if (!email || !password || !name || !cpf || !dataNascimento || !genderId || !roleId) {
+            if (!email || !password || !name || !cpf || !birthday || !genderId) {
                 return res.status(400).json({
-                    message: 'Email, senha, nome, cpf, dataNascimento, genderId e roleId são obrigatórios',
+                    message: 'Email, senha, nome, cpf, birthday, genderId são obrigatórios',
                 });
             }
 
@@ -119,13 +121,15 @@ class AuthController {
 
             const hashedPassword = await authService.hashPassword(password);
 
+            const role = await roleService.getRole(RoleName.USER);
+
             const newUser = await prisma.user.create({
                 data: {
                     name,
                     cpf,
-                    dataNascimento: new Date(dataNascimento),
+                    birthday: new Date(birthday),
                     genderId,
-                    roleId,
+                    roleId: role.id,
                     authentication: {
                         create: {
                             email,
@@ -142,6 +146,10 @@ class AuthController {
                     id: newUser.id,
                     email: newUser.authentication?.email,
                     name: newUser.name,
+                    role: {
+                        id: role.id,
+                        name: role.name
+                    }
                 },
             });
         } catch (error: any) {
