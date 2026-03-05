@@ -4,6 +4,8 @@ export interface TokenPayload {
     userId: number;
     email: string;
     permission: PermissionLevel;
+    iat?: number;
+    exp?: number;
 }
 
 export interface LoginCredentials {

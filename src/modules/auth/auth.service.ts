@@ -1,8 +1,7 @@
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { jwtConfig } from '../../config/jwt.config';
 import { TokenPayload, LoginCredentials } from '../../utils/types/auth.types';
-import { includes } from 'zod';
 import { PermissionLevel } from '../../utils/constants/permission.constants';
 import { PrismaClient } from '../../generated/prisma';
 import ms from 'ms';
@@ -12,7 +11,7 @@ const prisma = new PrismaClient();
 class AuthService {
     generateAccessToken(payload: TokenPayload): string {
         return jwt.sign(payload, jwtConfig.secret, {
-            expiresIn: jwtConfig.accessTokenExpiration,
+            expiresIn: jwtConfig.accessTokenExpiration as SignOptions["expiresIn"],
         });
     }
 
@@ -20,7 +19,7 @@ class AuthService {
         return jwt.sign(payload, jwtConfig.secret, {
             expiresIn: rememberMe 
                 ? jwtConfig.refreshTokenRememberMeExpiration 
-                : jwtConfig.refreshTokenExpiration,
+                : jwtConfig.refreshTokenExpiration as SignOptions["expiresIn"],
         });
     }
 
@@ -99,10 +98,13 @@ class AuthService {
                 throw new Error('Refresh token inválido');
             }
 
-            const newAccessToken = this.generateAccessToken(payload);
+            const { iat, exp, ...cleanPayload } = payload;
+
+            const newAccessToken = this.generateAccessToken(cleanPayload);
 
             return { accessToken: newAccessToken };
         } catch (error) {
+            console.error('ERRO DETALHADO:', error); 
             throw new Error('Não foi possível renovar o token');
         }
     }
