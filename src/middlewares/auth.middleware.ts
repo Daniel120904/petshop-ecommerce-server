@@ -3,18 +3,6 @@ import authService from '../modules/auth/auth.service';
 import { PermissionLevel, PERMISSIONS } from '../utils/constants/permission.constants';
 import { pathToRegexp } from 'path-to-regexp';
 
-declare global {
-    namespace Express {
-        interface Request {
-            user?: {
-                userId: number;
-                email: string;
-                permission: PermissionLevel;
-            };
-        }
-    }
-}
-
 class AuthMiddleware {
     async authenticate(req: Request, res: Response, next: NextFunction) {
         console.log('req.path:', req.path);
@@ -38,6 +26,11 @@ class AuthMiddleware {
             }
 
             const token = authHeader.substring(7);
+
+            if (!await authService.isActiveToken(token)) {
+                return res.status(401).json({ message: 'Token inválido ou expirado' });
+            }
+
             const payload = authService.verifyToken(token);
 
             req.user = {
@@ -103,7 +96,7 @@ class AuthMiddleware {
                 });
             }
 
-            if (user.permission === 'MASTER') return next();
+            if (user.permission === PermissionLevel.MASTER) return next();
 
             const resource = await resourceGetter(req);
 

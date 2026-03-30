@@ -1,5 +1,9 @@
 import { PermissionLevel } from "../constants/permission.constants";
 
+export interface AuthenticatedRequest extends Request {
+    user: TokenPayload;
+}
+
 export interface TokenPayload {
     userId: number;
     email: string;

@@ -14,12 +14,26 @@ export const PERMISSIONS = {
     },
     [PermissionLevel.USER]: {
         routes: [
-            { path: '/produtos', methods: ['GET'] },
-            { path: '/produtos/:id', methods: ['GET'] },
-            { path: '/pedidos', methods: ['GET', 'POST'] },
-            { path: '/perfil', methods: ['GET', 'PUT'] },
             { path: '/me', methods: ['GET'] },
             { path: '/logout', methods: ['POST'] },
+            { path: '/user/me', methods: ['DELETE'] },
+            { path: '/user', methods: ['PUT'] },
+            
+            { path: '/phone', methods: ['POST'] },
+            { path: '/phone', methods: ['DELETE'] },
+            { path: '/phone', methods: ['GET'] },
+
+            { path: '/address', methods: ['POST'] },
+            { path: '/address', methods: ['DELETE'] },
+            { path: '/address', methods: ['GET'] },
+            { path: '/address', methods: ['PUT'] },
+
+            { path: '/password', methods: ['PATCH'] },
+
+            { path: '/card', methods: ['POST'] },
+            { path: '/card/primary', methods: ['PATCH'] },
+            { path: '/card', methods: ['GET'] },
+            { path: '/card', methods: ['DELETE'] },
         ],
     },
     [PermissionLevel.MASTER]: {

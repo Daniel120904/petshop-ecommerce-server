@@ -1,13 +1,14 @@
 import { PrismaClient } from '../../generated/prisma';
 import { RoleName } from '../../utils/constants/role.constants';
+import roleRepository from './role.repository';
 
 const prisma = new PrismaClient();
 
 class RoleService {
     async getRole(roleName: RoleName) {
-        const role = await prisma.role.findUnique({
-            where: { name: roleName },
-        });
+        const role = await roleRepository.findUnique(
+            { name: roleName },
+        );
 
         if(!role) throw new Error('Role não encontrada');
 

@@ -1,72 +1,116 @@
 
-interface FindManyOptions {
-    include?: object;
-    select?: object;
-    orderBy?: object | object[];
-    pagination?: {
-        page: number;
-        pageSize: number;
-    };
-}
-
-export abstract class BaseRepository<T> {
-    protected abstract model: any;
-
-    protected defaultWhere = {
-        isDelete: false,
+type FindOptions<
+    TInclude extends object, 
+    TSelect extends object, 
+    TOrderBy extends object
+> =
+    (
+        | { include?: TInclude; select?: never }
+        | { select?: TSelect;   include?: never }
+    ) & {
+        orderBy?: TOrderBy | TOrderBy[];
+        pagination?: {
+            page?: number;
+            pageSize?: number;
+        };
     }
 
-    async findMany(where: object = {}, options: FindManyOptions = {}) {
+interface PaginationMeta {
+    total: number;
+    page: number;
+    pageSize: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+}
+
+export abstract class BaseRepository<
+    TModel,
+    TCreateInput,
+    TUpdateInput,
+    TWhereInput extends object = object,
+    TInclude extends object = object,
+    TSelect extends object = object ,
+    TOrderBy extends object = object
+> {
+    protected abstract model: any;
+
+    protected hasDeleteFlag: boolean = false;
+
+    protected defaultWhere: TWhereInput = {} as TWhereInput;
+
+    private get softDeleteFilter(): Partial<TWhereInput> {
+        return this.hasDeleteFlag
+            ? ({ isDelete: false } as unknown as Partial<TWhereInput>)
+            : {};
+    }
+
+    async findMany(
+        where: TWhereInput = {} as TWhereInput,
+        options: FindOptions<TInclude, TSelect, TOrderBy> = {}
+    ): Promise<{ data: TModel[]; meta: PaginationMeta }> {
         const { pagination, ...restOptions } = options;
 
-        const paginationArgs = pagination
-            ? {
-                skip: (pagination.page - 1) * pagination.pageSize,
-                take: pagination.pageSize,
-            }
-            : {};
+        const mergedWhere = {
+            ...this.defaultWhere,
+            ...this.softDeleteFilter,
+            ...where
+        };
 
-        const [data, total] = await Promise.all([
-            this.model.findMany({
-                where: { ...this.defaultWhere, ...where },
-                ...restOptions,
-                ...paginationArgs,
-            }),
-            pagination
-                ? this.model.count({ where: { ...this.defaultWhere, ...where } })
-                : null,
-        ]);
+        const total = await this.model.count({ where: mergedWhere });
 
-        if (!pagination) return data;
+        const page = pagination?.page ?? 1;
+        const pageSize = pagination?.pageSize ?? total;
+
+        const skip = (page - 1) * pageSize;
+        const take = pageSize;
+
+        const data = await this.model.findMany({
+            where: mergedWhere,
+            ...restOptions,
+            skip,
+            take,
+        });
 
         return {
-            data,
+            data: data as TModel[],
             meta: {
                 total,
-                page: pagination.page,
-                pageSize: pagination.pageSize,
-                totalPages: Math.ceil(total / pagination.pageSize),
-                hasNext: pagination.page < Math.ceil(total / pagination.pageSize),
-                hasPrev: pagination.page > 1,
+                page,
+                pageSize,
+                totalPages: Math.ceil(total / pageSize),
+                hasNext: page < Math.ceil(total / pageSize),
+                hasPrev: page > 1,
             },
         };
     }
 
-    async findFirst(where: object = {}, options: { include?: object; select?: object } = {}) {
+    async findFirst(
+        where: TWhereInput,
+        options: FindOptions<TInclude, TSelect, TOrderBy> = {}
+    ): Promise<any> {
         return this.model.findFirst({
-            where: { ...this.defaultWhere, ...where },
+            where: { ...this.defaultWhere, ...this.softDeleteFilter, ...where },
             ...options,
         });
     }
 
-    async findUnique(where: object, options: { include?: object; select?: object } = {}) {
+    async findUnique(
+        where: TWhereInput,
+        options: FindOptions<TInclude, TSelect, TOrderBy> = {}
+    ): Promise<any>  {
         return this.model.findUnique({
-            where: { ...this.defaultWhere, ...where },
+            where: { ...this.defaultWhere, ...this.softDeleteFilter, ...where },
             ...options,
         });
     }
 
-    async create(data: object, options: { include?: object; select?: object } = {}) {
+    async create<TOptions extends { include?: TInclude; select?: TSelect }>(
+        input: TCreateInput,
+        options: TOptions = {} as TOptions
+    ): Promise<any> {
+        const data = await this.beforeCreate(input);
+
         return this.model.create({
             data: {
                 ...data,
@@ -77,11 +121,13 @@ export abstract class BaseRepository<T> {
         });
     }
 
-    async createMany(data: object[]) {
+    async createMany(data: TCreateInput[]) : Promise<{ count: number }> {
         this.validateBulkPayload(data, 'createMany');
 
+        const processed = await Promise.all(data.map(item => this.beforeCreate(item)));
+
         return this.model.createMany({
-            data: data.map((item) => ({
+            data: processed.map((item) => ({
                 ...item,
                 createdAt: new Date(),
                 updatedAt: new Date(),
@@ -89,11 +135,19 @@ export abstract class BaseRepository<T> {
         });
     }
 
-    async update(where: object, data: object, options: { include?: object; select?: object } = {}) {
+    protected async beforeCreate(data: TCreateInput): Promise<TCreateInput> {
+        return data; 
+    }
+
+    async update<TOptions extends { include?: TInclude; select?: TSelect }>(
+        where: TWhereInput,
+        data: TUpdateInput,
+        options: TOptions = {} as TOptions
+    ): Promise<any> {
         await this.blockIfDeleted(where);
 
         return this.model.update({
-            where,
+            where: { ...this.defaultWhere, ...this.softDeleteFilter, ...where },
             data: {
                 ...data,
                 updatedAt: new Date(),
@@ -102,12 +156,12 @@ export abstract class BaseRepository<T> {
         });
     }
 
-    async updateMany(where: object, data: object) {
+    async updateMany(where: TWhereInput, data: TUpdateInput) : Promise<{ count: number }> {
         this.validateBulkWhere(where, 'updateMany');
         await this.blockIfAnyDeleted(where);
 
         return this.model.updateMany({
-            where: { ...this.defaultWhere, ...where },
+            where: { ...this.defaultWhere, ...this.softDeleteFilter, ...where },
             data: {
                 ...data,
                 updatedAt: new Date(),
@@ -115,7 +169,12 @@ export abstract class BaseRepository<T> {
         });
     }
 
-    async delete(where: object) {
+    async delete(where: TWhereInput) : Promise<TModel> {
+        if (!this.hasDeleteFlag) {
+            await this.blockIfNotFound(where);
+            return this.model.delete({ where });
+        }
+
         await this.blockIfDeleted(where);
 
         return this.model.update({
@@ -127,8 +186,14 @@ export abstract class BaseRepository<T> {
         });
     }
 
-    async deleteMany(where: object) {
+    async deleteMany(where: TWhereInput) : Promise<{ count: number }> {
         this.validateBulkWhere(where, 'deleteMany');
+
+        if (!this.hasDeleteFlag) {
+            await this.blockIfNoneFound(where); // garante que existe algo antes de deletar
+            return this.model.deleteMany({ where: { ...this.defaultWhere, ...where } });
+        }
+
         await this.blockIfAnyDeleted(where);
 
         return this.model.updateMany({
@@ -143,7 +208,7 @@ export abstract class BaseRepository<T> {
     /**
      * Bloqueia update/delete em um único registro já deletado.
      */
-    private async blockIfDeleted(where: object): Promise<void> {
+    private async blockIfDeleted(where: TWhereInput) {
         const record = await this.model.findFirst({ where });
 
         if (!record) {
@@ -155,12 +220,28 @@ export abstract class BaseRepository<T> {
         }
     }
 
+    private async blockIfNotFound(where: TWhereInput) {
+        const record = await this.model.findFirst({ where });
+
+        if (!record) {
+            throw new Error('Registro não encontrado');
+        }
+    }
+
+    private async blockIfNoneFound(where: TWhereInput) {
+        const count = await this.model.count({ where: { ...this.defaultWhere, ...where } });
+
+        if (count === 0) {
+            throw new Error('Nenhum registro encontrado para deletar');
+        }
+    }
+
     /**
      * Bloqueia update/delete em massa se qualquer registro já estiver deletado.
      */
-    private async blockIfAnyDeleted(where: object): Promise<void> {
+    private async blockIfAnyDeleted(where: TWhereInput) {
         const deletedCount = await this.model.count({
-            where: { ...where, isDelete: true },
+            where: { ...this.defaultWhere, ...this.softDeleteFilter, ...where },
         });
 
         if (deletedCount > 0) {
@@ -174,7 +255,7 @@ export abstract class BaseRepository<T> {
      * Garante que o where de operações bulk não está vazio
      * para evitar afetar a tabela inteira acidentalmente.
      */
-    private validateBulkWhere(where: object, operation: string): void {
+    private validateBulkWhere(where: TWhereInput, operation: string) {
         if (!where || Object.keys(where).length === 0) {
             throw new Error(
                 `${operation} requer ao menos um filtro no 'where'. ` +
@@ -186,7 +267,7 @@ export abstract class BaseRepository<T> {
     /**
      * Garante que o array de dados para createMany não está vazio.
      */
-    private validateBulkPayload(data: object[], operation: string): void {
+    private validateBulkPayload(data: TCreateInput[], operation: string) {
         if (!data || data.length === 0) {
             throw new Error(`${operation} requer ao menos um item no array de dados.`);
         }

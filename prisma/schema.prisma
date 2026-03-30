@@ -14,7 +14,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/*
+  npx prisma migrate dev --name <nome>
 
+
+  Talvez:
+  npx prisma migrate reset
+*/
 
 
 // ============================================
@@ -24,36 +30,6 @@ datasource db {
 enum phone_type {
   telephone
   cellphone
-}
-
-enum state {
-  AC
-  AL
-  AP
-  AM
-  BA
-  CE
-  DF
-  ES
-  GO
-  MA
-  MT
-  MS
-  MG
-  PA
-  PB
-  PR
-  PE
-  PI
-  RJ
-  RN
-  RS
-  RO
-  RR
-  SC
-  SP
-  SE
-  TO
 }
 
 enum card_brand {
@@ -73,7 +49,7 @@ enum card_brand {
 
 model authentication {
   id        Int      @id @default(autoincrement())
-  email     String   @unique
+  email     String   @unique @db.Citext
   password  String
   blocked   Boolean  @default(false)
   active    Boolean  @default(true)
@@ -106,6 +82,16 @@ model role {
   users user[]
 }
 
+model active_token {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  user      user     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 
 
 // ============================================
@@ -116,7 +102,7 @@ model user {
   id             Int      @id @default(autoincrement())
   name           String
   birthday DateTime
-  cpf            String   @unique @db.VarChar(11)
+  cpf            String   @db.VarChar(11)
   isDelete       Boolean  @default(false)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -131,6 +117,7 @@ model user {
 
   authentication authentication?
   refresh_tokens refresh_token[]
+  active_tokens   active_token[] 
   phones         phone[]
   addresses      address[]
   cards          card[]
@@ -171,15 +158,15 @@ model phone {
 
 model address {
   id            Int      @id @default(autoincrement())
+  nickname      String
   street        String
-  streetType    String
-  residenceType String
-  neighbor      String
-  number        String
+  number  String
+  complement    String?
+  neighborhood  String
   zip           String   @db.VarChar(8)
-  city          String
-  state         state
-  observation   String?
+  cityId        Int
+  city          city     @relation(fields: [cityId], references: [id])
+  isDelete      Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -187,8 +174,30 @@ model address {
   user   user @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([cityId])
 
   sales sale[]
+
+  @@unique([nickname, userId])
+}
+
+model city {
+  id        Int       @id @default(autoincrement())
+  name      String
+  stateId   Int
+  state     state @relation(fields: [stateId], references: [id])
+
+  addresses address[]
+
+  @@unique([name, stateId])
+}
+
+model state {
+  id           Int    @id @default(autoincrement())
+  name         String @unique
+  abbreviation String @unique @db.VarChar(2)
+
+  cities city[]
 }
 
 
@@ -206,6 +215,7 @@ model card {
   last4     String     @db.VarChar(4)
   token     String     @unique
   primary   Boolean    @default(false)
+  isDelete   Boolean    @default(false)
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 
@@ -215,6 +225,8 @@ model card {
   salePayments sale_payment[]
 
   @@index([userId])
+
+  @@unique([nickname, userId])
 }
 
 

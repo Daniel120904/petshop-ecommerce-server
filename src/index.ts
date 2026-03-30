@@ -2,12 +2,17 @@ import "dotenv/config";
 import express, { Application } from "express";
 import morgan from "morgan";
 
-import userRoutes from "./routes/userRoutes";
 import productRoutes from "./routes/productRoutes";
 import saleRoutes from "./routes/saleRoutes";
 import authRoutes from "./modules/auth/auth.routes";
 import authMiddleware from "./middlewares/auth.middleware";
 import { PrismaClient } from "./generated/prisma";
+import { startJobs } from "./jobs";
+import userRoutes from "./modules/user/user.routes";
+import phoneRoutes from "./modules/phone/phone.routes";
+import addressRoutes from "./modules/address/address.routes";
+import paymentRoutes from "./modules/payment/payment.routes";
+
 
 const app: Application = express();
 const prisma = new PrismaClient();
@@ -22,10 +27,14 @@ app.use("/api",
   authMiddleware.requirePermissions()
 );
 
+app.use("/api", paymentRoutes);
 app.use("/api", userRoutes);
+app.use("/api", phoneRoutes);
+app.use("/api", addressRoutes);
+app.use("/api", authRoutes);
+
 app.use("/api", productRoutes);
 app.use("/api", saleRoutes);
-app.use("/api", authRoutes);
 
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err);
@@ -36,12 +45,13 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on http://localhost:${PORT}`);
 
-  try {
-    await prisma.$connect();
-    console.log("Database connected");
-  } catch (error) {
-    console.error("Database connection failed:", error);
-  }
+    try {
+        await prisma.$connect();
+        console.log("Database connected");
+        startJobs();
+    } catch (error) {
+        console.error("Database connection failed:", error);
+    }
 });
