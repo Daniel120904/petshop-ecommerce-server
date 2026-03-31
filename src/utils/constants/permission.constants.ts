@@ -7,33 +7,50 @@ export enum PermissionLevel {
 export const PERMISSIONS = {
     [PermissionLevel.PUBLIC]: {
         routes: [
+            //Auth
             { path: '/login', methods: ['POST'] },
             { path: '/register', methods: ['POST'] },
             { path: '/refresh', methods: ['POST'] },
+
+            //Produtos
+            { path: '/product', methods: ['GET'] },
+            { path: '/product/:productId', methods: ['GET'] },
+
+            //Categoria
+            { path: '/category', methods: ['GET'] },
+            { path: '/subCategory', methods: ['GET'] },
         ],
     },
     [PermissionLevel.USER]: {
         routes: [
+            //Auth
             { path: '/me', methods: ['GET'] },
             { path: '/logout', methods: ['POST'] },
             { path: '/user/me', methods: ['DELETE'] },
             { path: '/user', methods: ['PUT'] },
+            { path: '/password', methods: ['PATCH'] },
             
+            //Telefone
             { path: '/phone', methods: ['POST'] },
             { path: '/phone', methods: ['DELETE'] },
             { path: '/phone', methods: ['GET'] },
 
+            //Endereco
             { path: '/address', methods: ['POST'] },
             { path: '/address', methods: ['DELETE'] },
             { path: '/address', methods: ['GET'] },
             { path: '/address', methods: ['PUT'] },
 
-            { path: '/password', methods: ['PATCH'] },
-
+            //Cartao
             { path: '/card', methods: ['POST'] },
             { path: '/card/primary', methods: ['PATCH'] },
             { path: '/card', methods: ['GET'] },
             { path: '/card', methods: ['DELETE'] },
+
+            //Produto
+
+
+            //Carrinho
         ],
     },
     [PermissionLevel.MASTER]: {

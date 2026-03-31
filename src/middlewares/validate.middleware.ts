@@ -3,14 +3,22 @@ import { z } from "zod";
 
 export const validate = <T extends z.ZodType>(
     handler: (req: Request & { validated: z.infer<T> }, res: Response) => any,
-    schema: T
+    schema?: T
 ) => {
     return (req: Request, res: Response, next: NextFunction) => {
-        const data = {
+        if (!schema) {
+            return handler(req as any, res)
+        }
+
+        const raw = {
             ...req.body,
             ...req.query,
             ...req.params,
         }
+
+        const data = Object.fromEntries(
+            Object.entries(raw).filter(([_, v]) => v !== '' && v !== null && v !== undefined)
+        )
 
         const result = schema.safeParse(data)
 

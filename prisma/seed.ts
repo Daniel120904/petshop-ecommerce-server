@@ -35,6 +35,29 @@ const states = [
     { name: 'Tocantins', abbreviation: 'TO' },
 ];
 
+const petCategories = [
+    {
+        name: 'Alimentação',
+        subCategories: ['Ração Seca', 'Ração Úmida', 'Petiscos', 'Suplementos']
+    },
+    {
+        name: 'Higiene e Beleza',
+        subCategories: ['Shampoo', 'Condicionador', 'Escova e Pente', 'Perfume Pet']
+    },
+    {
+        name: 'Saúde',
+        subCategories: ['Antiparasitários', 'Vitaminas', 'Primeiros Socorros']
+    },
+    {
+        name: 'Acessórios',
+        subCategories: ['Coleiras', 'Guias e Peitorais', 'Roupas e Fantasias', 'Camas e Casinhas']
+    },
+    {
+        name: 'Brinquedos',
+        subCategories: ['Brinquedos para Cães', 'Brinquedos para Gatos', 'Brinquedos para Aves']
+    },
+]
+
 async function main() {
     // Roles
     for (const role of Object.values(RoleName)) {
@@ -63,28 +86,44 @@ async function main() {
         });
     }
 
+    // Categories e SubCategories
+    for (const cat of petCategories) {
+        await prisma.category.upsert({
+            where: { name: cat.name },
+            update: {},
+            create: {
+                name: cat.name,
+                subCategories: {
+                    create: cat.subCategories.map((name) => ({ name }))
+                }
+            }
+        });
+    }
+
     // Master
     const hashedPassword = await bcrypt.hash("123@Pass", 10);
 
-    await prisma.authentication.create({
-        data: {
+    await prisma.authentication.upsert({
+        where: { email: "master@gmail.com" },
+        update: {},
+        create: {
             email: "master@gmail.com",
             password: hashedPassword,
             user: {
-            create: {
-                name: "Usuario Teste",
-                birthday: new Date("2000-01-01"),
-                cpf: "12345678901",
-                gender: {
-                    connectOrCreate: {
-                        where: { id: 1 }, 
-                        create: { name: "Outro" },
+                create: {
+                    name: "Usuario Teste",
+                    birthday: new Date("2000-01-01"),
+                    cpf: "12345678901",
+                    gender: {
+                        connectOrCreate: {
+                            where: { id: 1 },
+                            create: { name: "Outro" },
+                        },
+                    },
+                    role: {
+                        connect: { name: RoleName.MASTER },
                     },
                 },
-                role: {
-                    connect: { name: RoleName.MASTER },
-                },
-            },
             },
         },
     });
@@ -97,3 +136,4 @@ main()
     .finally(() => prisma.$disconnect());
 
 //yarn prisma db seed
+//yarn prisma studio

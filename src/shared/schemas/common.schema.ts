@@ -2,14 +2,18 @@ import { z } from 'zod';
 import { parseSortToOrderBy } from './sort.schema';
 import { userSortMap } from '../../utils/constants/sortMap.constants';
 
-export const coerceId = (fieldName: string) => z.preprocess((val) => {
-    if (val === undefined || val === null || val === '') return undefined;
-    if (isNaN(Number(val))) return undefined;
-    return Number(val);
-}, z.number({ message: `${fieldName} é obrigatório` })
-    .int(`${fieldName} deve ser um número inteiro`)
-    .positive(`${fieldName} inválido`)
-);
+export const coerceId = (fieldName: string) =>
+    z.preprocess((val) => {
+        if (val === undefined || val === null || val === '') return undefined;
+        if (isNaN(Number(val))) return val; 
+        return Number(val);
+    },
+        z.number({
+            message: `${fieldName} é obrigatório`
+        })
+            .int(`${fieldName} deve ser um número inteiro`)
+            .positive(`${fieldName} inválido`)
+    );
 
 const lowerCaseWords = new Set([
     'da', 'de', 'do', 'das', 'dos', 'e', 'a', 'o', 'as', 'os',
@@ -46,27 +50,23 @@ export const enumFromString = <T extends Record<string, string>>(enumObj: T) =>
             return z.NEVER;
         }
 
-    return upper as T[keyof T];
-});
+        return upper as T[keyof T];
+    });
+
+const optionalNumber = () =>
+    z.preprocess(
+        (val) => (val === "" || val === undefined ? undefined : Number(val)),
+        z.number().min(1, "deve ser maior que 0").optional()
+    );
 
 export const validatePagination = () =>
-  z.object({
-        page: z.coerce
-        .number()
-        .min(1, "page deve ser maior que 0")
-        .optional(),
+    z.object({
+        page: optionalNumber().default(1),
 
-        pageSize: z.coerce
-        .number()
-        .min(1, "pageSize deve ser maior que 0")
-        .optional(),
+        pageSize: optionalNumber().default(10),
 
-        sort: z
-            .string()
-            .optional()
-            .transform((val) => {
-                if (!val) return [{ createdAt: "desc" }];
-
-                return parseSortToOrderBy(val, userSortMap);
-            }),
+        orderBy: z.string().optional().transform((val) => {
+        if (!val) return [{ createdAt: "desc" }];
+            return parseSortToOrderBy(val, userSortMap);
+        }),
     });

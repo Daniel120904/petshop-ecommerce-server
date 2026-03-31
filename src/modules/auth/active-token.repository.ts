@@ -1,8 +1,9 @@
+import { TypedRepository } from "../../base/base.typed-repository";
 import { prisma } from "../../infrastructure/database/prisma.client";
-import { createRepository } from "../../utils/with-overloads";
 
-const ActiveTokenBase = createRepository(prisma.active_token);
-
-class ActiveTokenRepository extends ActiveTokenBase {}
+class ActiveTokenRepository extends TypedRepository<typeof prisma.active_token> {
+    protected model = prisma.active_token;
+}
 
 export default new ActiveTokenRepository();
+

@@ -121,14 +121,14 @@ model user {
   phones         phone[]
   addresses      address[]
   cards          card[]
-  cart           cart?
+  cart_items     cart_item[]
   sales          sale[]
 }
 
 model gender {
   id        Int      @id @default(autoincrement())
   name      String   @unique
-  active    Boolean  @default(true)
+  isDelete    Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -232,64 +232,65 @@ model card {
 
 
 model product {
-  id       Int    @id @default(autoincrement())
-  name     String
-  price    Float
-  image    String
-  quantity Int   
-  active   Boolean
-  isDelete Boolean
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            Int                   @id @default(autoincrement())
+  name          String
+  price         Float
+  image         String[]
+  stock         Int                   @default(0)
+  active        Boolean               @default(true)
+  isDelete      Boolean               @default(false)
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+
+  subCategories product_sub_category[]
+  cartItems     cart_item[]
+  saleItems     sale_item[]
+}
+
+model sub_category {
+  id         Int                    @id @default(autoincrement())
+  name       String
+  isDelete   Boolean                @default(false)
+  createdAt  DateTime               @default(now())
+  updatedAt  DateTime               @updatedAt
 
   categoryId Int
-  category   category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category   category               @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
+  products   product_sub_category[]
+}
+
+model product_sub_category {
+  productId     Int
   subCategoryId Int
-  subCategory   sub_category @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
 
-  cartItems cart_item[]
-  saleItems sale_item[]
+  product     product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  subCategory sub_category @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
+
+  @@id([productId, subCategoryId]) 
 }
 
 model category {
   id       Int       @id @default(autoincrement())
   name     String    @unique
-  isDelete Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  products product[]
-}
-
-model sub_category {
-  id       Int       @id @default(autoincrement())
-  name     String    @unique
-  isDelete Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  products product[]
-}
-
-model cart {
-  id        Int        @id @default(autoincrement())
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-
-  userId    Int        @unique
-  user      user       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items     cart_item[]
+  subCategories sub_category[]
 }
 
 model cart_item {
   id        Int @id @default(autoincrement())
-  cartId    Int
-  productId Int
   quantity  Int @default(1)
+  inStock     Boolean @default(true)
 
-  cart    cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  userId    Int
+  user    user    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  productId Int
   product product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, productId])
 }
 
 model sale {

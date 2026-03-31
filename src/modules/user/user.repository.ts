@@ -1,8 +1,8 @@
+import { TypedRepository } from '../../base/base.typed-repository';
 import { prisma } from '../../infrastructure/database/prisma.client';
-import { createRepository } from '../../utils/with-overloads';
 
-const UserBase = createRepository(prisma.user);
-
-class UserRepository extends UserBase {}
+class UserRepository extends TypedRepository<typeof prisma.user> {
+    protected model = prisma.user;
+}
 
 export default new UserRepository();

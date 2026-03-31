@@ -2,7 +2,6 @@ import "dotenv/config";
 import express, { Application } from "express";
 import morgan from "morgan";
 
-import productRoutes from "./routes/productRoutes";
 import saleRoutes from "./routes/saleRoutes";
 import authRoutes from "./modules/auth/auth.routes";
 import authMiddleware from "./middlewares/auth.middleware";
@@ -12,6 +11,7 @@ import userRoutes from "./modules/user/user.routes";
 import phoneRoutes from "./modules/phone/phone.routes";
 import addressRoutes from "./modules/address/address.routes";
 import paymentRoutes from "./modules/payment/payment.routes";
+import productRoutes from "./modules/product/product.routes";
 
 
 const app: Application = express();

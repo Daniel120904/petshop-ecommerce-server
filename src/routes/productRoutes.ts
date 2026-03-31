@@ -7,9 +7,9 @@ import { productValidations } from "../validations/productValidations";
 const router = Router()
 const productController = new ProductController()
 
-router.get("/getProducts", (req, res) => productController.getProducts(req, res))
+//router.get("/getProducts", (req, res) => productController.getProducts(req, res))
 router.get("/getCartItems", (req, res) => productController.getCartItems(req, res))
-router.get("/getCategories", (req, res) => productController.getCategories(req, res))
+//router.get("/getCategories", (req, res) => productController.getCategories(req, res))
 
 /* router.post("/getAiRecommendation", validateDto(productValidations.getAiRecommendation), (req, res) => productController.getAiRecommendation(req, res))
 

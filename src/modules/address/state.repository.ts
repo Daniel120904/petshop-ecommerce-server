@@ -1,8 +1,8 @@
+import { TypedRepository } from '../../base/base.typed-repository';
 import { prisma } from '../../infrastructure/database/prisma.client';
-import { createRepository } from '../../utils/with-overloads';
 
-const StateBase = createRepository(prisma.state);
-
-class StateRepository extends StateBase {}
+class StateRepository extends TypedRepository<typeof prisma.state> {
+    protected model = prisma.state;
+}
 
 export default new StateRepository();

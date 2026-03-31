@@ -1,8 +1,8 @@
+import { TypedRepository } from '../../base/base.typed-repository';
 import { prisma } from '../../infrastructure/database/prisma.client';
-import { createRepository } from '../../utils/with-overloads';
 
-const CartBase = createRepository(prisma.product);
-
-class CartRepository extends CartBase {}
+class CartRepository extends TypedRepository<typeof prisma.cart_item> {
+    protected model = prisma.cart_item;
+}
 
 export default new CartRepository();

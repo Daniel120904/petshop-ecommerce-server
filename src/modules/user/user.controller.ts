@@ -10,13 +10,13 @@ class UserController {
     async getUser(req: ValidatedRequest<typeof userSchema.get>, res: Response) {
         try {
             const { userId } = req.validated;
-            console.log("oi")
+
             const result = await userRepository.findUnique(
                 {
                     id: userId
                 }
             );
-            console.log("oi")
+
             return res.status(200).json({
                 data: result,
             });
@@ -27,7 +27,9 @@ class UserController {
         }
     }
 
-    async getUsers(req: Request, res: Response) {
+    async getUsers(req: ValidatedRequest<typeof userSchema.list>, res: Response) {
+        const { orderBy, page, pageSize } = req.validated;
+
         try {
             const result = await userRepository.findMany(
                 {
@@ -36,6 +38,13 @@ class UserController {
                             not: RoleName.MASTER
                         }
                     }
+                },
+                {
+                    pagination: {
+                        page,
+                        pageSize
+                    },
+                    orderBy
                 }
             );
 

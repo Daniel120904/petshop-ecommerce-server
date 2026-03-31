@@ -1,0 +1,8 @@
+import { TypedRepository } from '../../base/base.typed-repository';
+import { prisma } from '../../infrastructure/database/prisma.client';
+
+class ProductRepository extends TypedRepository<typeof prisma.product> {
+    protected model = prisma.product;
+}
+
+export default new ProductRepository();

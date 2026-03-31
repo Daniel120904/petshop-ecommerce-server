@@ -1,8 +1,8 @@
+import { TypedRepository } from '../../base/base.typed-repository';
 import { prisma } from '../../infrastructure/database/prisma.client';
-import { createRepository } from '../../utils/with-overloads';
 
-const AddressBase = createRepository(prisma.address);
-
-class AddressRepository extends AddressBase {}
+class AddressRepository extends TypedRepository<typeof prisma.address> {
+    protected model = prisma.address;
+}
 
 export default new AddressRepository();

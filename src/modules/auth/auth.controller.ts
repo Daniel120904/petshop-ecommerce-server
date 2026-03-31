@@ -139,7 +139,11 @@ class AuthController {
                         },
                     },
                 },
-                { include: { authentication: true } },
+                { 
+                    include: { 
+                        authentication: true 
+                    } 
+                },
             );
 
             return res.status(201).json({

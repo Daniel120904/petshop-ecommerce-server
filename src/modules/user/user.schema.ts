@@ -11,7 +11,5 @@ export const userSchema = {
         userId: coerceId('Usuario'),
     }),
 
-    list: z.object({
-        pagination: validatePagination()
-    }),
+    list: validatePagination()
 };

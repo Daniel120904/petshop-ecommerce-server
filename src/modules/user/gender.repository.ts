@@ -1,8 +1,8 @@
+import { TypedRepository } from '../../base/base.typed-repository';
 import { prisma } from '../../infrastructure/database/prisma.client';
-import { createRepository } from '../../utils/with-overloads';
 
-const GenderBase = createRepository(prisma.gender);
-
-class GenderRepository extends GenderBase {}
+class GenderRepository extends TypedRepository<typeof prisma.gender> {
+    protected model = prisma.gender;
+}
 
 export default new GenderRepository();

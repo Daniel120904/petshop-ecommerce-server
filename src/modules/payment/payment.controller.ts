@@ -63,11 +63,19 @@ class PaymentController {
 
     async getCards(req: ValidatedRequest<typeof paymentSchema.getCards>, res: Response) {
         try {
+            const { orderBy, page, pageSize } = req.validated;
             const { userId } = req.user!;
 
             const result = await cardRepository.findMany(
                 {
                     userId
+                },
+                {
+                    pagination: {
+                        page,
+                        pageSize
+                    },
+                    orderBy
                 }
             )
 
