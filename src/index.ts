@@ -2,7 +2,6 @@ import "dotenv/config";
 import express, { Application } from "express";
 import morgan from "morgan";
 
-import saleRoutes from "./routes/saleRoutes";
 import authRoutes from "./modules/auth/auth.routes";
 import authMiddleware from "./middlewares/auth.middleware";
 import { PrismaClient } from "./generated/prisma";
@@ -12,6 +11,7 @@ import phoneRoutes from "./modules/phone/phone.routes";
 import addressRoutes from "./modules/address/address.routes";
 import paymentRoutes from "./modules/payment/payment.routes";
 import productRoutes from "./modules/product/product.routes";
+import saleRoutes from "./modules/sale/sale.routes";
 
 
 const app: Application = express();
@@ -32,7 +32,6 @@ app.use("/api", userRoutes);
 app.use("/api", phoneRoutes);
 app.use("/api", addressRoutes);
 app.use("/api", authRoutes);
-
 app.use("/api", productRoutes);
 app.use("/api", saleRoutes);
 

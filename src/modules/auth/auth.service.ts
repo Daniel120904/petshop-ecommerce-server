@@ -6,7 +6,6 @@ import { PermissionLevel } from '../../utils/constants/permission.constants';
 import ms from 'ms';
 import authRepository from './auth.repository';
 import refreshTokenRepository from './refresh-token.repository';
-import blacklistedTokenRepository from './active-token.repository';
 import activeTokenRepository from './active-token.repository';
 
 const tokenBlacklist = new Set<string>();

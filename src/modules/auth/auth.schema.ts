@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { validateCpf, validateBirthday, coerceId, validatePassword, toPascalCase } from '../../shared/schemas';
+import { validatePassword, toPascalCase, validateCpf, validateBirthday, coerceId } from '../../utils/schemas';
 
 export const authSchema = {
     login: z.object({

@@ -1,6 +1,7 @@
 import { z } from 'zod';
-import { coerceId, validatePhone } from '../../shared/schemas';
-import { validatePagination } from '../../shared/schemas/common.schema';
+import { validatePhone, coerceId } from '../../utils/schemas';
+import { validatePagination } from '../../utils/schemas/common.schema';
+
 
 export const phoneSchema = {
     create: validatePhone(),

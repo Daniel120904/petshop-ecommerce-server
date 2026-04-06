@@ -1,6 +1,6 @@
 import { coerce, z } from 'zod';
-import { coerceId, toPascalCase, validateZip } from '../../shared/schemas';
-import { validatePagination } from '../../shared/schemas/common.schema';
+import { toPascalCase, validateZip, coerceId } from '../../utils/schemas';
+import { validatePagination } from '../../utils/schemas/common.schema';
 
 export const addressSchema = {
     create: z.object({

@@ -1,6 +1,7 @@
 import { z } from 'zod';
-import { coerceId, validatePagination } from '../../shared/schemas/common.schema';
-import { cartItemSchema } from '../../shared/schemas/cart.schema';
+import { coerceId } from '../../utils/schemas';
+import { cartItemSchema } from '../../utils/schemas/cart.schema';
+import { validatePagination } from '../../utils/schemas/common.schema';
 
 export const productSchema = {
     listProduct: validatePagination(), 

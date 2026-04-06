@@ -20,6 +20,10 @@ datasource db {
 
   Talvez:
   npx prisma migrate reset
+
+
+  npx prisma migrate reset --skip-seed
+  npx prisma db seed
 */
 
 
@@ -32,6 +36,11 @@ enum phone_type {
   cellphone
 }
 
+enum coupon_type {
+  percent
+  value
+}
+
 enum card_brand {
   VISA
   MASTERCARD
@@ -40,6 +49,26 @@ enum card_brand {
   HIPERCARD
 }
 
+enum payment_type {
+  card
+  pix
+  boleto
+}
+
+enum payment_status {
+  canceled
+  refunded
+  pending
+  paid
+}
+
+enum sale_status {
+  processing
+  approved
+  shipped
+  delivered
+  canceled
+}
 
 
 
@@ -222,19 +251,22 @@ model card {
   userId Int
   user   user @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  salePayments sale_payment[]
+  payments payment[]
 
   @@index([userId])
 
   @@unique([nickname, userId])
 }
 
-
+// ============================================
+// PRODUCT
+// ============================================
 
 model product {
   id            Int                   @id @default(autoincrement())
   name          String
   price         Float
+  salePrice         Float @default(0)
   image         String[]
   stock         Int                   @default(0)
   active        Boolean               @default(true)
@@ -293,51 +325,78 @@ model cart_item {
   @@unique([userId, productId])
 }
 
+// ============================================
+// SALE
+// ============================================
+
 model sale {
   id         Int      @id @default(autoincrement())
-  totalValue Float
-  status     String   @default("processamento")
+  finalPrice Float
+  totalPrice Float
+  status     sale_status @default(processing)
   createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  cancelReason String?
 
   userId     Int
-  user     user          @relation(fields: [userId], references: [id])
+  user       user     @relation(fields: [userId], references: [id])
 
   addressId  Int
-  address  address      @relation(fields: [addressId], references: [id])
+  address    address  @relation(fields: [addressId], references: [id])
 
-  couponId   Int?
-  coupon   coupon?       @relation(fields: [couponId], references: [id])
-  items    sale_item[]
-  payments sale_payment[]
+  items      sale_item[]
+  payment    payment?
+  coupons     sale_coupon[]
 }
 
 model sale_item {
-  id        Int   @id @default(autoincrement())
   quantity  Int
   price     Float
 
   saleId    Int
-  sale    sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  sale      sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
 
   productId Int
-  product product @relation(fields: [productId], references: [id])
+  product   product @relation(fields: [productId], references: [id])
+
+  @@unique([saleId, productId])
 }
 
-model sale_payment {
-  id     Int   @id @default(autoincrement())
-  saleId Int
-  cardId Int
-  amount Float
+model payment {
+  id            Int   @id @default(autoincrement())
+  saleId        Int   @unique
+  type   payment_type
+  status payment_status
+  cardId        Int?
+  amount        Float
 
-  sale sale   @relation(fields: [saleId], references: [id], onDelete: Cascade)
-  card card @relation(fields: [cardId], references: [id])
+  sale sale @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  card card? @relation(fields: [cardId], references: [id])
 }
+
+// ============================================
+// COUPON
+// ============================================
 
 model coupon {
-  id                 Int    @id @default(autoincrement())
-  code               String? @unique
-  discountPercentage Int?
-  discountValue      Float?
+  id        Int     @id @default(autoincrement())
+  code      String  @unique
+  type      coupon_type
+  discount  Float
+  maxUses   Int     @default(1)
 
-  sales sale[]
+  sales     sale_coupon[]
+}
+
+model sale_coupon {
+  saleId    Int  
+  couponId  Int
+
+  type      coupon_type
+  discount  Float?
+
+  sale   sale   @relation(fields: [saleId], references: [id])
+  coupon coupon @relation(fields: [couponId], references: [id])
+
+  @@unique([saleId, couponId])
 }

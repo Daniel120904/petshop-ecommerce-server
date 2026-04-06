@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { coerceId, toPascalCase } from '../../shared/schemas';
-import { enumFromString, validatePagination } from '../../shared/schemas/common.schema';
 import { card_brand } from '../../generated/prisma';
+import { toPascalCase, coerceId } from '../../utils/schemas';
+import { enumFromString, validatePagination } from '../../utils/schemas/common.schema';
 
 export const paymentSchema = {
     createCard: z.object({
