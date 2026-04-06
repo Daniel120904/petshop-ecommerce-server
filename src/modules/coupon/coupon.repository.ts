@@ -1,5 +1,5 @@
 import { TypedRepository } from '../../base/base.typed-repository';
-import { prisma } from '../../infrastructure/database/prisma.client';
+import { prisma } from '../../core/database/prisma.client';
 
 class CouponRepository extends TypedRepository<typeof prisma.coupon> {
     protected model = prisma.coupon;

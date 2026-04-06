@@ -12,6 +12,7 @@ import addressRoutes from "./modules/address/address.routes";
 import paymentRoutes from "./modules/payment/payment.routes";
 import productRoutes from "./modules/product/product.routes";
 import saleRoutes from "./modules/sale/sale.routes";
+import { registerRoutes } from "./core/registerRoutes";
 
 
 const app: Application = express();
@@ -22,18 +23,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use(cors());
 
-app.use("/api",
-  authMiddleware.authenticate,
-  authMiddleware.requirePermissions()
-);
-
-app.use("/api", paymentRoutes);
-app.use("/api", userRoutes);
-app.use("/api", phoneRoutes);
-app.use("/api", addressRoutes);
-app.use("/api", authRoutes);
-app.use("/api", productRoutes);
-app.use("/api", saleRoutes);
+registerRoutes(app);
 
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err);
