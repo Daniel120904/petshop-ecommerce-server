@@ -14,7 +14,7 @@ class ProductService {
         name: string,
         price: number,
         stock: number,
-        image?: any[],
+        images?: string[],
         categoryId: number,
         subCategoryIds: number[]
     }) {
@@ -66,7 +66,7 @@ class ProductService {
         name?: string,
         price?: number,
         stock?: number,
-        image?: any[],
+        images?: string[],
         category?: {
             categoryId: number,
             subCategoryIds: number[]
@@ -102,7 +102,7 @@ class ProductService {
                 name: req.name,
                 price: req.price,
                 stock: req.stock,
-                image: req.image,
+                images: req.images,
                 ...(subCategories && {
                         subCategories: {
                             create: subCategories.map((sub) => ({
