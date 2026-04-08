@@ -5,9 +5,13 @@ export const validate = <T extends z.ZodType>(
     handler: (req: Request & { validated: z.infer<T> }, res: Response) => any,
     schema?: T
 ) => {
-    return (req: Request, res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
         if (!schema) {
-            return handler(req as any, res)
+            try {
+                return await handler(req as any, res);
+            } catch (err) {
+                return next(err);
+            }
         }
 
         const raw = {
@@ -32,7 +36,12 @@ export const validate = <T extends z.ZodType>(
             return
         }
 
-        (req as any).validated = result.data
-        handler(req as any, res)
+        (req as any).validated = result.data;
+
+        try {
+            return await handler(req as any, res);
+        } catch (err) {
+            return next(err);
+        }
     }
 }

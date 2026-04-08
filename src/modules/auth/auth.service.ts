@@ -26,11 +26,7 @@ class AuthService {
     }
 
     verifyToken(token: string): TokenPayload {
-        try {
-            return jwt.verify(token, jwtConfig.secret) as TokenPayload;
-        } catch (error) {
-            throw new Error('Token inválido ou expirado');
-        }
+        return jwt.verify(token, jwtConfig.secret) as TokenPayload;
     }
 
     async hashPassword(password: string): Promise<string> {
@@ -43,62 +39,56 @@ class AuthService {
     }
 
     async login(credentials: LoginCredentials): Promise<{ accessToken: string; refreshToken: string; user: any }> {
-        try {
-            const auth = await authRepository.findUnique(
-                { 
-                    email: credentials.email 
-                },
-                { 
-                    include: { 
-                        user: { 
-                            include: { 
-                                role: true 
-                            } 
+        const auth = await authRepository.findUnique(
+            { 
+                email: credentials.email 
+            },
+            { 
+                include: { 
+                    user: { 
+                        include: { 
+                            role: true 
                         } 
                     } 
-                }
-            );
+                } 
+            }
+        );
 
-            if (!auth) throw new Error('Credenciais inválidas');
+        if (!auth) throw new Error('Credenciais inválidas');
 
-            const isPasswordValid = await this.comparePassword(credentials.password, auth.password);
-            if (!isPasswordValid) throw new Error('Credenciais inválidas');
+        const isPasswordValid = await this.comparePassword(credentials.password, auth.password);
+        if (!isPasswordValid) throw new Error('Credenciais inválidas');
 
-            if (auth.active === false) throw new Error('Usuário inativo');
-            if (auth.blocked === true) throw new Error('Usuário bloqueado');
+        if (auth.active === false) throw new Error('Usuário inativo');
+        if (auth.blocked === true) throw new Error('Usuário bloqueado');
 
-            const permission = this.resolvePermission(auth.user.role.name);
+        const permission = this.resolvePermission(auth.user.role.name);
 
-            const tokenPayload: TokenPayload = {
-                userId: auth.user.id, 
+        const tokenPayload: TokenPayload = {
+            userId: auth.user.id, 
+            email: auth.email,
+            permission,
+        };
+
+        const accessToken = this.generateAccessToken(tokenPayload);
+        const refreshToken = this.generateRefreshToken(tokenPayload, credentials.rememberMe);
+
+        await this.saveRefreshToken(auth.user.id, refreshToken, credentials.rememberMe);
+        await this.saveActiveToken(auth.user.id, accessToken);
+
+        return {
+            accessToken,
+            refreshToken,
+            user: {
+                id: auth.user.id,
                 email: auth.email,
+                name: auth.user.name,
                 permission,
-            };
-
-            const accessToken = this.generateAccessToken(tokenPayload);
-            const refreshToken = this.generateRefreshToken(tokenPayload, credentials.rememberMe);
-
-            await this.saveRefreshToken(auth.user.id, refreshToken, credentials.rememberMe);
-            await this.saveActiveToken(auth.user.id, accessToken);
-
-            return {
-                accessToken,
-                refreshToken,
-                user: {
-                    id: auth.user.id,
-                    email: auth.email,
-                    name: auth.user.name,
-                    permission,
-                },
-            };
-        } catch (error) {
-            console.error('Erro no login: ', error);
-            throw error;
-        }
+            },
+        };
     }
 
     async refreshAccessToken(refreshToken: string): Promise<{ accessToken: string }> {
-        try {
             const payload = this.verifyToken(refreshToken);
 
             const isValid = await this.validateRefreshToken(payload.userId, refreshToken);
@@ -115,10 +105,6 @@ class AuthService {
             await this.saveActiveToken(payload.userId, newAccessToken);
 
             return { accessToken: newAccessToken };
-        } catch (error) {
-            console.error('ERRO DETALHADO:', error); 
-            throw new Error('Não foi possível renovar o token');
-        }
     }
 
     async logout(userId: number, refreshToken: string, accessToken: string): Promise<void> {

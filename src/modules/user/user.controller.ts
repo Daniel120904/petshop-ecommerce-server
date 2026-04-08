@@ -8,86 +8,62 @@ import { RoleName } from '../../utils/constants/role.constants';
 
 class UserController {
     async getUser(req: ValidatedRequest<typeof userSchema.get>, res: Response) {
-        try {
-            const { userId } = req.validated;
+        const { userId } = req.validated;
 
-            const result = await userRepository.findUnique(
-                {
-                    id: userId
-                }
-            );
+        const result = await userRepository.findUnique(
+            {
+                id: userId
+            }
+        );
 
-            return res.status(200).json({
-                data: result,
-            });
-        } catch (error: any) {
-            return res.status(500).json({
-                message: error.message || 'Erro ao deletar usuário',
-            });
-        }
+        return res.status(200).json({
+            data: result,
+        });
     }
 
     async getUsers(req: ValidatedRequest<typeof userSchema.list>, res: Response) {
         const { orderBy, page, pageSize } = req.validated;
 
-        try {
-            const result = await userRepository.findMany(
-                {
-                    role: {
-                        name: {
-                            not: RoleName.MASTER
-                        }
+        const result = await userRepository.findMany(
+            {
+                role: {
+                    name: {
+                        not: RoleName.MASTER
                     }
-                },
-                {
-                    pagination: {
-                        page,
-                        pageSize
-                    },
-                    orderBy
                 }
-            );
+            },
+            {
+                pagination: {
+                    page,
+                    pageSize
+                },
+                orderBy
+            }
+        );
 
-            return res.status(200).json({
-                data: result,
-            });
-        } catch (error: any) {
-            return res.status(500).json({
-                message: error.message || 'Erro ao deletar usuário',
-            });
-        }
+        return res.status(200).json({
+            data: result,
+        });
     }
 
     async delete(req: ValidatedRequest<typeof userSchema.delete>, res: Response) {
-        try {
-            const { userId } = req.validated;
+        const { userId } = req.validated;
 
-            const result = await userService.delete(Number(userId));
+        const result = await userService.delete(Number(userId));
 
-            return res.status(200).json({
-                data: result,
-            });
-        } catch (error: any) {
-            return res.status(500).json({
-                message: error.message || 'Erro ao deletar usuário',
-            });
-        }
+        return res.status(200).json({
+            data: result,
+        });
     }
 
     async deleteMe(req: Request, res: Response) {
-        try {
-            const { userId } = req.user!;
+        const { userId } = req.user!;
 
-            const result = await userService.delete(userId);
+        const result = await userService.delete(userId);
 
-            return res.status(200).json({
-                data: result,
-            });
-        } catch (error: any) {
-            return res.status(500).json({
-                message: error.message || 'Erro ao deletar usuário',
-            });
-        }
+        return res.status(200).json({
+            data: result,
+        });
     }
 }
 

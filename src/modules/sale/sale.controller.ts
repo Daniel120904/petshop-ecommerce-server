@@ -6,138 +6,107 @@ import saleRepository from "./sale.repository";
 
 class SaleController {
     async createSale(req: ValidatedRequest<typeof saleSchema.createSale>, res: Response) {
-        try {
-            const { addressId, coupons, paymentType, products, cardId, userId } = req.validated;
+        const { addressId, coupons, paymentType, products, cardId, userId } = req.validated;
 
-            const result = await saleService.create({
-                addressId,
-                paymentType,
-                products,
-                userId,
-                cardId,
-                coupons
-            });
+        const result = await saleService.create({
+            addressId,
+            paymentType,
+            products,
+            userId,
+            cardId,
+            coupons
+        });
 
-            return res.status(200).json({
-                data: result
-            })
-        } catch (error: any) {
-            return res.status(500).json({
-                message: error.message || 'Erro ao criar usuário',
-            });
-        }
+        return res.status(200).json({
+            data: result
+        })
     }
 
     async updateSaleStatus(req: ValidatedRequest<typeof saleSchema.updateStatus>, res: Response) {
-        try {
-            const { saleId, status } = req.validated;
-            const { userId } = req.user!; 
+        const { saleId, status } = req.validated;
 
-            const result = await saleService.updateStatus({
-                saleId,
-                status
-            });
+        const result = await saleService.updateStatus({
+            saleId,
+            status
+        });
 
-            return res.status(200).json({
-                data: result
-            })
-        } catch (error: any) {
-            return res.status(500).json({
-                message: error.message || 'Erro ao criar usuário',
-            });
-        }
+        return res.status(200).json({
+            data: result
+        })
     }
 
     async cancelSale(req: ValidatedRequest<typeof saleSchema.cancelSale>, res: Response) {
-        try {
-            const { saleId, reason } = req.validated;
-            const { userId } = req.user!; 
+        const { saleId, reason } = req.validated;
+        const { userId } = req.user!; 
 
-            const result = await saleService.cancelSale({
-                saleId,
-                userId,
-                reason
-            });
+        const result = await saleService.cancelSale({
+            saleId,
+            userId,
+            reason
+        });
 
-            return res.status(200).json({
-                data: result
-            })
-        } catch (error: any) {
-            return res.status(500).json({
-                message: error.message || 'Erro ao criar usuário',
-            });
-        }
+        return res.status(200).json({
+            data: result
+        })
     }
 
     async getSales(req: ValidatedRequest<typeof saleSchema.getSales>, res: Response) {
-        try {
-            const { orderBy, page, pageSize } = req.validated;
+        const { orderBy, page, pageSize } = req.validated;
 
-            const result = await saleRepository.findMany(
-                {
+        const result = await saleRepository.findMany(
+            {
 
-                },
-                {
-                    include: {
-                        items: {
-                            include: {
-                                product: true
-                            }
-                        },
-                        payment: true
+            },
+            {
+                include: {
+                    items: {
+                        include: {
+                            product: true
+                        }
                     },
-                    orderBy,
-                    pagination: {
-                        page,
-                        pageSize
-                    }
+                    payment: true
+                },
+                orderBy,
+                pagination: {
+                    page,
+                    pageSize
                 }
-            )
+            }
+        )
 
-            return res.status(200).json({
-                data: result
-            })
-        } catch (error: any) {
-            return res.status(500).json({
-                message: error.message || 'Erro ao criar usuário',
-            });
-        }
+        return res.status(200).json({
+            data: result
+        })
     }
 
     async getUserSales(req: ValidatedRequest<typeof saleSchema.getUserSales>, res: Response) {
-        try {
-            const { orderBy, page, pageSize } = req.validated;
-            const { userId } = req.user!;
+        const { orderBy, page, pageSize } = req.validated;
+        const { userId } = req.user!;
 
-            const result = await saleRepository.findMany(
-                {
-                    userId
-                },
-                {
-                    include: {
-                        items: {
-                            include: {
-                                product: true
-                            }
-                        },
-                        payment: true
+        const result = await saleRepository.findMany(
+            {
+                userId
+            },
+            {
+                include: {
+                    items: {
+                        include: {
+                            product: true
+                        }
                     },
-                    orderBy,
-                    pagination: {
-                        page,
-                        pageSize
-                    }
+                    payment: true
+                },
+                orderBy,
+                pagination: {
+                    page,
+                    pageSize
                 }
-            )
+            }
+        )
 
-            return res.status(200).json({
-                data: result
-            })
-        } catch (error: any) {
-            return res.status(500).json({
-                message: error.message || 'Erro ao criar usuário',
-            });
-        }
+        return res.status(200).json({
+            data: result
+        })
     }
 }
 

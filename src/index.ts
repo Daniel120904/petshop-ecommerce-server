@@ -2,16 +2,8 @@ import "dotenv/config";
 import express, { Application } from "express";
 import morgan from "morgan";
 
-import authRoutes from "./modules/auth/auth.routes";
-import authMiddleware from "./middlewares/auth.middleware";
 import { PrismaClient } from "./generated/prisma";
 import { startJobs } from "./jobs";
-import userRoutes from "./modules/user/user.routes";
-import phoneRoutes from "./modules/phone/phone.routes";
-import addressRoutes from "./modules/address/address.routes";
-import paymentRoutes from "./modules/payment/payment.routes";
-import productRoutes from "./modules/product/product.routes";
-import saleRoutes from "./modules/sale/sale.routes";
 import { registerRoutes } from "./core/registerRoutes";
 
 
@@ -26,7 +18,7 @@ app.use(cors());
 registerRoutes(app);
 
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error(err);
+  console.error(`[${req.method} ${req.path}]`, err);
   res.status(err.status || 500).json({
     message: err.message || "Internal Server Error",
   });

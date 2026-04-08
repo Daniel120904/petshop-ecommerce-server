@@ -6,87 +6,63 @@ import { Request, Response } from 'express';
 
 class PaymentController {
     async createCard(req: ValidatedRequest<typeof paymentSchema.createCard>, res: Response) {
-        try {
-            const { nickname, holder, brand, number } = req.validated;
-            const { userId } = req.user!;
+        const { nickname, holder, brand, number } = req.validated;
+        const { userId } = req.user!;
 
-            const result = await paymentService.createCard(userId, {
-                nickname,
-                holder,
-                brand,
-                number
-            });
+        const result = await paymentService.createCard(userId, {
+            nickname,
+            holder,
+            brand,
+            number
+        });
 
-            return res.status(200).json({
-                data: result,
-            });
-        } catch (error: any) {
-            return res.status(401).json({
-                message: error.message || 'Erro ao fazer login',
-            });
-        }
+        return res.status(200).json({
+            data: result,
+        });
     }
 
     async changePrimaryCard(req: ValidatedRequest<typeof paymentSchema.changePrimaryCard>, res: Response) {
-        try {
-            const { cardId } = req.validated;
-            const { userId } = req.user!;
+        const { cardId } = req.validated;
+        const { userId } = req.user!;
 
-            const result = await paymentService.setPrimaryCard(userId, cardId);
+        const result = await paymentService.setPrimaryCard(userId, cardId);
 
-            return res.status(200).json({
-                data: result,
-            });
-        } catch (error: any) {
-            return res.status(401).json({
-                message: error.message || 'Erro ao fazer login',
-            });
-        }
+        return res.status(200).json({
+            data: result,
+        });
     }
 
     async deleteCard(req: ValidatedRequest<typeof paymentSchema.deleteCard>, res: Response) {
-        try {
-            const { cardId } = req.validated;
-            const { userId } = req.user!;
+        const { cardId } = req.validated;
+        const { userId } = req.user!;
 
-            const result = await paymentService.deleteCard(userId, cardId);
+        const result = await paymentService.deleteCard(userId, cardId);
 
-            return res.status(200).json({
-                data: result,
-            });
-        } catch (error: any) {
-            return res.status(401).json({
-                message: error.message || 'Erro ao fazer login',
-            });
-        }
+        return res.status(200).json({
+            data: result,
+        });
     }
 
     async getCards(req: ValidatedRequest<typeof paymentSchema.getCards>, res: Response) {
-        try {
-            const { orderBy, page, pageSize } = req.validated;
-            const { userId } = req.user!;
+        const { orderBy, page, pageSize } = req.validated;
+        const { userId } = req.user!;
 
-            const result = await cardRepository.findMany(
-                {
-                    userId
+        const result = await cardRepository.findMany(
+            {
+                userId
+            },
+            {
+                pagination: {
+                    page,
+                    pageSize
                 },
-                {
-                    pagination: {
-                        page,
-                        pageSize
-                    },
-                    orderBy
-                }
-            )
+                orderBy
+            }
+        )
 
-            return res.status(200).json({
-                data: result,
-            });
-        } catch (error: any) {
-            return res.status(401).json({
-                message: error.message || 'Erro ao fazer login',
-            });
-        }
+        return res.status(200).json({
+            data: result,
+        });
     }
 }
 

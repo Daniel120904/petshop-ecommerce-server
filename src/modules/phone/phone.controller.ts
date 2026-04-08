@@ -7,64 +7,46 @@ import { ValidatedRequest } from '../../utils/types/validate.types';
 
 class PhoneController {
     async create(req: ValidatedRequest<typeof phoneSchema.create>, res: Response) {
-        try {
-            const { number, ddd } = req.validated;
-            const { userId } = req.user!;
+        const { number, ddd } = req.validated;
+        const { userId } = req.user!;
 
-            const type = getPhoneType(number);
+        const type = getPhoneType(number);
 
-            const result = await phoneService.create(userId, number, type, ddd);
+        const result = await phoneService.create(userId, number, type, ddd);
 
-            return res.status(200).json({
-                data: result,
-            });
-        } catch (error: any) {
-            return res.status(500).json({
-                message: error.message || 'Erro ao Adicionar Telefone',
-            });
-        }
+        return res.status(200).json({
+            data: result,
+        });
     }
 
     async get(req: ValidatedRequest<typeof phoneSchema.get>, res: Response) {
-        try {
-            const { userId } = req.user!;
+        const { userId } = req.user!;
 
-            const result = await phoneRepository.findMany(
-                {
-                    userId
-                }
-            );
+        const result = await phoneRepository.findMany(
+            {
+                userId
+            }
+        );
 
-            return res.status(200).json({
-                data: result,
-            });
-        } catch (error: any) {
-            return res.status(500).json({
-                message: error.message || 'Erro ao Pegar Telefone',
-            });
-        }
+        return res.status(200).json({
+            data: result,
+        });
     }
 
     async delete(req: ValidatedRequest<typeof phoneSchema.delete>, res: Response) {
-        try {
-            const { userId } = req.user!;
-            const { phoneId } = req.validated;
+        const { userId } = req.user!;
+        const { phoneId } = req.validated;
 
-            const result = await phoneRepository.delete(
-                {
-                    userId,
-                    id: phoneId
-                }
-            );
+        const result = await phoneRepository.delete(
+            {
+                userId,
+                id: phoneId
+            }
+        );
 
-            return res.status(200).json({
-                data: result,
-            });
-        } catch (error: any) {
-            return res.status(500).json({
-                message: error.message || 'Erro ao Deletar Telefone',
-            });
-        }
+        return res.status(200).json({
+            data: result,
+        });
     }
 }
 
