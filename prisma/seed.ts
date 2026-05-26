@@ -5,6 +5,55 @@ import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
+async function createApiUser() {
+    await prisma.$executeRawUnsafe(`
+        DO $$
+        BEGIN
+            IF NOT EXISTS (
+                SELECT FROM pg_catalog.pg_roles
+                WHERE rolname = 'api_user'
+            ) THEN
+                CREATE ROLE api_user LOGIN PASSWORD 'senha_forte';
+            END IF;
+        END
+        $$;
+    `);
+
+    await prisma.$executeRawUnsafe(`
+        GRANT CONNECT ON DATABASE "pet-shop" TO api_user;
+    `);
+
+    await prisma.$executeRawUnsafe(`
+        GRANT USAGE ON SCHEMA public TO api_user;
+    `);
+
+    await prisma.$executeRawUnsafe(`
+        GRANT SELECT, INSERT, UPDATE, DELETE
+        ON ALL TABLES IN SCHEMA public
+        TO api_user;
+    `);
+
+    await prisma.$executeRawUnsafe(`
+        GRANT USAGE, SELECT
+        ON ALL SEQUENCES IN SCHEMA public
+        TO api_user;
+    `);
+
+    await prisma.$executeRawUnsafe(`
+        ALTER DEFAULT PRIVILEGES IN SCHEMA public
+        GRANT SELECT, INSERT, UPDATE, DELETE
+        ON TABLES TO api_user;
+    `);
+
+    await prisma.$executeRawUnsafe(`
+        ALTER DEFAULT PRIVILEGES IN SCHEMA public
+        GRANT USAGE, SELECT
+        ON SEQUENCES TO api_user;
+    `);
+
+    console.log('api_user criado/configurado!');
+}
+
 const states = [
     { name: 'Acre', abbreviation: 'AC' },
     { name: 'Alagoas', abbreviation: 'AL' },
@@ -59,6 +108,8 @@ const petCategories = [
 ]
 
 async function main() {
+    await createApiUser();
+    
     // Roles
     for (const role of Object.values(RoleName)) {
         await prisma.role.upsert({

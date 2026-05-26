@@ -15,6 +15,7 @@ datasource db {
 }
 
 /*
+  npx prisma generate
   npx prisma migrate dev --name <nome>
 
 
