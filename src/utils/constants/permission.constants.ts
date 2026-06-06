@@ -50,13 +50,13 @@ export const PERMISSIONS = {
             //Produto
 
             //Carrinho
-            { path: '/cart', methods: ['GET, PUT, POST, DELETE'] },
+            { path: '/cart', methods: ['GET', 'PUT', 'POST', 'DELETE'] },
 
             //Cupons
             { path: '/coupon/check', methods: ['GET'] },
 
             //Vendas
-            { path: '/sale', methods: ['POST, PATCH'] },
+            { path: '/sale', methods: ['POST', 'PATCH'] },
             { path: '/sale/:userId', methods: ['GET'] },
             { path: '/sale/cancel', methods: ['PATCH'] },
         ],
