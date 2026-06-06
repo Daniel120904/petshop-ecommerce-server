@@ -1,3 +1,4 @@
+import { Prisma } from "../generated/prisma";
 
 type FindOptions<
     TInclude extends object, 
@@ -147,7 +148,7 @@ export abstract class BaseRepository<
         await this.blockIfDeleted(where);
 
         return this.model.update({
-            where: { ...this.defaultWhere, ...this.softDeleteFilter, ...where },
+            where: this.resolveUniqueWhere(where),
             data: {
                 ...data,
                 updatedAt: new Date(),
@@ -178,7 +179,7 @@ export abstract class BaseRepository<
         await this.blockIfDeleted(where);
 
         return this.model.update({
-            where,
+            where: this.resolveUniqueWhere(where),
             data: {
                 isDelete: true,
                 updatedAt: new Date(),
@@ -279,4 +280,32 @@ export abstract class BaseRepository<
             throw new Error(`${operation} requer ao menos um item no array de dados.`);
         }
     }
+
+    protected resolveUniqueWhere(where: TWhereInput): any {
+    const modelName = this.model.name; // ex: "cart_item"
+
+    // Busca o model no DMMF
+    const dmmfModel = Prisma.dmmf.datamodel.models.find(
+        m => m.name.toLowerCase() === modelName.toLowerCase()
+    );
+
+    if (!dmmfModel) return where;
+
+    // Busca o primeiro @@unique composto que todos os campos estão presentes no where
+    const compositeUnique = dmmfModel.uniqueIndexes.find(index =>
+        index.fields.length > 1 &&
+        index.fields.every(field => (where as any)[field] !== undefined)
+    );
+
+    if (!compositeUnique) return where;
+
+    // Monta a chave composta no formato que o Prisma espera
+    // ex: { userId_productId: { userId: 2, productId: 26 } }
+    const compositeKey = compositeUnique.fields.join('_');
+    const compositeValue = Object.fromEntries(
+        compositeUnique.fields.map(field => [field, (where as any)[field]])
+    );
+
+    return { [compositeKey]: compositeValue };
+}
 }
