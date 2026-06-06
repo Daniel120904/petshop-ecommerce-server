@@ -53,6 +53,7 @@ export const authSchema = {
         birthday: validateBirthday(5).optional(),
         genderId: coerceId('Gênero').optional(),
         email: z.email('Email inválido').optional(),
+        userId: coerceId('Usuario').optional()
     })
     .refine((data) => Object.values(data).some((v) => v !== undefined), {
         message: 'Informe ao menos um campo para atualizar',

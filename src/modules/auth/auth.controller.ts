@@ -187,10 +187,24 @@ class AuthController {
     }
 
     async updateUser(req: ValidatedRequest<typeof authSchema.updateUser>, res: Response) {
-        const { userId } = req.user!;
+        const { userId, permission } = req.user!;
         const { email, name, cpf, birthday, genderId } = req.validated;
 
-        const existingUser = await userRepository.findUnique({ id: userId });
+        let targetUserId = userId;
+
+        if (permission === PermissionLevel.MASTER) {
+            const { userId: userChanged } = req.validated;
+
+            if (!userChanged) {
+                return res.status(400).json({
+                    message: "Id do usuário não informado"
+                });
+            }
+
+            targetUserId = userChanged;
+        }
+    
+        const existingUser = await userRepository.findUnique({ id: targetUserId });
 
         if (!existingUser) {
             return res.status(404).json({ message: 'Usuário não encontrado' });
@@ -227,7 +241,7 @@ class AuthController {
         }
 
         const updatedUser = await userRepository.update(
-            { id: userId },
+            { id: targetUserId },
             {
                 ...(name && { name }),
                 ...(cpf && { cpf }),
