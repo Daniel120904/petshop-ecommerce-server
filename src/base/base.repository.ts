@@ -190,11 +190,16 @@ export abstract class BaseRepository<
         this.validateBulkWhere(where, 'deleteMany');
 
         if (!this.hasDeleteFlag) {
-            await this.blockIfNoneFound(where); // garante que existe algo antes de deletar
+            const foundRecords = await this.blockIfNoneFound(where); // garante que existe algo antes de deletar
+
+            if(!foundRecords) return { count: 0 }
+
             return this.model.deleteMany({ where: { ...this.defaultWhere, ...where } });
         }
 
-        await this.blockIfAnyDeleted(where);
+        const foundRecords = await this.blockIfAnyDeleted(where);
+
+        if(!foundRecords) return { count: 0 }
 
         return this.model.updateMany({
             where: { ...this.defaultWhere, ...where },
@@ -232,8 +237,10 @@ export abstract class BaseRepository<
         const count = await this.model.count({ where: { ...this.defaultWhere, ...where } });
 
         if (count === 0) {
-            throw new Error('Nenhum registro encontrado para deletar');
+            return false 
         }
+
+        return true
     }
 
     /**
@@ -245,10 +252,10 @@ export abstract class BaseRepository<
         });
 
         if (deletedCount > 0) {
-            throw new Error(
-                `Operação não permitida: ${deletedCount} registro(s) já deletado(s) no conjunto`
-            );
+            return false 
         }
+
+        return true
     }
 
     /**
