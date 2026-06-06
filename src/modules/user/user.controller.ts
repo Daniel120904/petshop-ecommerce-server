@@ -42,7 +42,7 @@ class UserController {
                 phones: user.phones.map((phone) => ({
                     number: phone.number,
                     ddd: phone.ddd
-                }))
+                })) || {}
             }
         });
     }
