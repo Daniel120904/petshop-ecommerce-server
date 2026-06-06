@@ -16,7 +16,8 @@ class ProductService {
         stock: number,
         images?: string[],
         categoryId: number,
-        subCategoryIds: number[]
+        subCategoryIds: number[],
+        description?: string
     }) {
         const subCategories = await validateSubCategories(req.categoryId, req.subCategoryIds);
 
@@ -33,6 +34,7 @@ class ProductService {
                 name: req.name,
                 price: req.price,
                 stock: req.stock,
+                description: req.description,
                 subCategories: {
                     create: subCategories.map((sub) => ({
                         subCategoryId: sub.id
@@ -67,6 +69,7 @@ class ProductService {
         price?: number,
         stock?: number,
         images?: string[],
+        description?: string,
         category?: {
             categoryId: number,
             subCategoryIds: number[]
@@ -102,6 +105,7 @@ class ProductService {
                 name: req.name,
                 price: req.price,
                 stock: req.stock,
+                description: req.description,
                 images: req.images,
                 ...(subCategories && {
                         subCategories: {

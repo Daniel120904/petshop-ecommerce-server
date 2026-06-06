@@ -13,6 +13,7 @@ export const productSchema = {
         price: z.number().positive(),
         stock: z.number().int().min(0),
         images: z.array(z.url()).optional(),
+        description: z.string().optional(),
         categoryId: coerceId('Categoria'),
         subCategoryIds: z.array(coerceId('SubCategoria')).min(1)
     }),
@@ -24,6 +25,7 @@ export const productSchema = {
         name: z.string().min(1),
         price: z.number().positive(),
         stock: z.number().int().min(0),
+        description: z.string().optional(),
         images: z.array(z.url()).optional(),
         categoryId: coerceId('Categoria'),
         subCategoryIds: z.array(coerceId('SubCategoria')).min(1)
