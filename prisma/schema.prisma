@@ -265,7 +265,7 @@ model card {
 
 model product {
   id            Int                   @id @default(autoincrement())
-  name          String
+  name          String                @unique
   price         Float
   salePrice         Float @default(0)
   images         String[]
@@ -282,7 +282,7 @@ model product {
 
 model sub_category {
   id         Int                    @id @default(autoincrement())
-  name       String
+  name       String                 @unique
   isDelete   Boolean                @default(false)
   createdAt  DateTime               @default(now())
   updatedAt  DateTime               @updatedAt
