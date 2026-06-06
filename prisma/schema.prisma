@@ -43,11 +43,11 @@ enum coupon_type {
 }
 
 enum card_brand {
-  VISA
-  MASTERCARD
-  AMEX
-  ELO
-  HIPERCARD
+  visa
+  mastercard
+  amex
+  elo
+  hipercard
 }
 
 enum payment_type {

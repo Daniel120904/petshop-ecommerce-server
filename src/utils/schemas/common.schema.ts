@@ -38,10 +38,12 @@ export const toPascalCase = (val: string) =>
 
 export const enumFromString = <T extends Record<string, string>>(enumObj: T) =>
     z.string().transform((val, ctx) => {
-        const upper = val.toUpperCase();
+        const lower = val.toLowerCase();
+        
         const values = Object.values(enumObj);
+        const normalizedValues = values.map(v => String(v).toLowerCase());
 
-        if (!values.includes(upper)) {
+        if (!normalizedValues.includes(lower)) {
             ctx.addIssue({
                 code: "custom",
                 message: `Valor inválido. Use: ${values.join(", ")}`,
@@ -50,7 +52,7 @@ export const enumFromString = <T extends Record<string, string>>(enumObj: T) =>
             return z.NEVER;
         }
 
-        return upper as T[keyof T];
+        return lower as T[keyof T];
     });
 
 const optionalNumber = () =>

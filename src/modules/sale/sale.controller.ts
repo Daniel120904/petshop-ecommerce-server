@@ -6,7 +6,8 @@ import saleRepository from "./sale.repository";
 
 class SaleController {
     async createSale(req: ValidatedRequest<typeof saleSchema.createSale>, res: Response) {
-        const { addressId, coupons, paymentType, products, cardId, userId } = req.validated;
+        const { addressId, coupons, paymentType, products, cardId } = req.validated;
+        const { userId } = req.user!
 
         const result = await saleService.create({
             addressId,

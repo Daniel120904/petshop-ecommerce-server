@@ -11,11 +11,10 @@ export const saleSchema = {
                 quantity: z.number().int().positive()
             })
         ),
-        coupons: z.array(z.string()),
+        coupons: z.array(z.string()).optional(),
         addressId: coerceId('Endereco'),
         paymentType: enumFromString(payment_type),
         cardId: coerceId('Cartao').optional(),
-        userId: coerceId('Usuario')
     }),
 
     updateStatus: z.object({
