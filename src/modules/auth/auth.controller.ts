@@ -8,6 +8,7 @@ import genderRepository from '../user/gender.repository';
 import { ValidatedRequest } from '../../utils/types/validate.types';
 import { authSchema } from './auth.schema';
 import { PermissionLevel } from '../../utils/constants/permission.constants';
+import userService from '../user/user.service';
 
 class AuthController {
     async login(req: ValidatedRequest<typeof authSchema.login>, res: Response) {
@@ -52,10 +53,44 @@ class AuthController {
     }
 
     async me(req: Request, res: Response) {
-        const user = req.user!;
+        const { userId } = req.user!;
+
+        const user = await userService.getUser(userId)
 
         return res.status(200).json({
-            data: user,
+            data: {
+                id: user.id,
+                name: user.name,
+                birthday: user.birthday,
+                cpf: user.cpf,
+                gender: user.gender.name,
+                role: user.role.name,
+                email: user.authentication?.email,
+                active: user.authentication?.active,
+                blocked: user.authentication?.blocked,
+                phones: user.phones.map((phone) => ({
+                    phoneId: phone.id,
+                    number: phone.number,
+                    ddd: phone.ddd
+                })),
+                addresses: user.addresses.map((address) => ({
+                    adressId: address.id,
+                    nickname: address.nickname,
+                    street: address.street,
+                    number: address.number,
+                    complement: address.complement,
+                    neighborhood: address.neighborhood,
+                    zip: address.zip,
+                    city: address.city.name,
+                    state: address.city.state.name,
+                    abbreviation: address.city.state.abbreviation
+                })),
+                cards: user.cards.map((card) => ({
+                    cardId: card.id,
+                    last4: card.last4,
+                    nickname: card.nickname
+                }))
+            },
         });
     }
 

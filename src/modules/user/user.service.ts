@@ -34,6 +34,36 @@ class UserService {
 
         return await userRepository.delete({ id });
     }
+
+    async getUser(id: number) {        
+        const user = await userRepository.findUnique(
+            { id: id },
+            {
+                include: {
+                    authentication: true,
+                    gender: true,
+                    role: true,
+                    phones: true,
+                    addresses: {
+                        include: {
+                            city: {
+                                include: {
+                                    state: true
+                                }
+                            }
+                        }
+                    },
+                    cards: true
+                }
+            }
+        );
+
+        if (!user) {
+            throw new Error("Usuário não encontrado")
+        }
+
+        return user
+    } 
 }
 
 export default new UserService();

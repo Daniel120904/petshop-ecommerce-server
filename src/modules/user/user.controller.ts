@@ -10,32 +10,7 @@ class UserController {
     async getUser(req: ValidatedRequest<typeof userSchema.get>, res: Response) {
         const { userId } = req.validated;
 
-        const user = await userRepository.findUnique(
-            { id: userId },
-            {
-                include: {
-                    authentication: true,
-                    gender: true,
-                    role: true,
-                    phones: true,
-                    addresses: {
-                        include: {
-                            city: {
-                                include: {
-                                    state: true
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        );
-
-        if (!user) {
-            return res.status(404).json({
-                message: "Usuário não encontrado"
-            });
-        }
+        const user = await userService.getUser(userId)
 
         return res.status(200).json({
             data: {
