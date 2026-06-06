@@ -43,8 +43,10 @@ export const productSchema = {
     updateCart: z.object({
         items: z.array(cartItemSchema)
     }),
-
     getSubCategories: z.object({
         categoryId: z.optional(coerceId('Categoria'))
+    }),
+    chatBotReq: z.object({
+        message: z.string()
     })
 };

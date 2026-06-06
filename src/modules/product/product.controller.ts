@@ -6,6 +6,7 @@ import productService from "./product.service";
 import categoryRepository from "./category.repository";
 import subCategoryRepository from "./subCategory.repository";
 import cartRepository from "./cart.repository";
+import { getAiRecommendation } from "../../infrastructure/gemini/recommendationAI";
 
 class ProductController {
     async getProducts(req: ValidatedRequest<typeof productSchema.listProduct>, res: Response) {
@@ -190,6 +191,14 @@ class ProductController {
         return res.status(200).json({
             data: result
         })
+    }
+
+    async chatBot(req: ValidatedRequest<typeof productSchema.chatBotReq>, res: Response) {
+        const { message } = req.validated
+        console.log(message)
+        const resIA = await getAiRecommendation(message)
+        
+        return res.status(200).json(resIA)
     }
 }
 

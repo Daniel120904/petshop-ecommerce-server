@@ -2,6 +2,7 @@
 
 import { GoogleGenAI } from "@google/genai";
 import "dotenv/config"; // Para carregar a GEMINI_API_KEY
+import productRepository from "../../modules/product/product.repository";
 
 // Inicializa o cliente Gemini
 // Ele buscará automaticamente a chave da variável de ambiente GEMINI_API_KEY
@@ -27,20 +28,43 @@ interface ProductData {
  * @returns O texto de recomendação gerado pela IA.
  */
 export async function getAiRecommendation(
-  userMessage: string,
-  products: ProductData[]
+  userMessage: string
 ): Promise<string> {
+  const products = await productRepository.findMany(
+    {
+      stock: {
+        gt: 0
+      }
+    },
+    {
+      include: {
+        subCategories: {
+          include: {
+            subCategory: {
+              include: {
+                category: true
+              }
+            }
+          }
+        }
+      }
+    }
+  );
+  console.log(products)
   // 1. Formata os produtos para o prompt da IA (texto simples e estruturado)
-  const productListString = products
+  const productListString = products.data
     .map(
       (p) =>
         `ID: ${p.id}, Nome: "${p.name}", Preço: R$${p.price.toFixed(
           2
-        )}, Categoria: ${p.category}, Subcategoria: ${p.subcategory
-        }, Estoque: ${p.quantity > 0 ? "Disponível" : "Esgotado"}`
+        )}, Categoria: ${p.subCategories?.[0]?.subCategory?.category?.name}, Subcategorias: ${
+        p.subCategories
+          .map(sub => sub.subCategory.name)
+          .join(", ")
+      }`
     )
     .join("\n");
-
+  console.log(productListString)
   // 2. Constrói o prompt com instruções claras para a IA
   const prompt = `Você é um assistente de recomendação de produtos para um e-commerce de pet shop. Sua tarefa é analisar a 'Mensagem do Cliente' e, com base na 'Lista de Produtos', recomendar o produto mais adequado.
 
@@ -67,7 +91,7 @@ Resposta do Chatbot:`;
       model,
       contents: prompt,
     });
-
+    console.log("ois")
     if (!response.text) {
       console.error("A IA retornou uma resposta vazia ou indefinida.");
       return "Ops! Tivemos um problema para gerar a recomendação. Por favor, tente refinar sua busca.";

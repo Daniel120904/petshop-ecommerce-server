@@ -19,6 +19,9 @@ export const PERMISSIONS = {
             //Categoria
             { path: '/category', methods: ['GET'] },
             { path: '/subCategory', methods: ['GET'] },
+
+            //ChatBot
+            { path: '/chatBot', methods: ['POST'] },
         ],
     },
     [PermissionLevel.USER]: {

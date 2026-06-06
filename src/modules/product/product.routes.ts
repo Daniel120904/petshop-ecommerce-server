@@ -20,4 +20,6 @@ router.put("/cart", validate((req, res) => productController.updateCart(req, res
 router.get("/subCategory", validate((req, res) => productController.getSubCategories(req, res), productSchema.getSubCategories));
 router.get("/category", validate((req, res) => productController.getCategories(req, res)));
 
+router.post("/chatBot", validate((req, res) => productController.chatBot(req, res), productSchema.chatBotReq))
+
 export default router;
