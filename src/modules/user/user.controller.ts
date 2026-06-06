@@ -17,7 +17,16 @@ class UserController {
                     authentication: true,
                     gender: true,
                     role: true,
-                    phones: true
+                    phones: true,
+                    addresses: {
+                        include: {
+                            city: {
+                                include: {
+                                    state: true
+                                }
+                            }
+                        }
+                    }
                 }
             }
         );
@@ -42,7 +51,18 @@ class UserController {
                 phones: user.phones.map((phone) => ({
                     number: phone.number,
                     ddd: phone.ddd
-                })) || {}
+                })),
+                addresses: user.addresses.map((address) => ({
+                    nickname: address.nickname,
+                    street: address.street,
+                    number: address.number,
+                    complement: address.complement,
+                    neighborhood: address.neighborhood,
+                    zip: address.zip,
+                    city: address.city.name,
+                    state: address.city.state.name,
+                    abbreviation: address.city.state.abbreviation
+                })) 
             }
         });
     }
