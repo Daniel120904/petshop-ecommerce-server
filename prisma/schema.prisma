@@ -323,6 +323,9 @@ model cart_item {
   productId Int
   product product @relation(fields: [productId], references: [id], onDelete: Restrict)
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([userId, productId])
 }
 
