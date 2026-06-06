@@ -16,7 +16,8 @@ class UserController {
                 include: {
                     authentication: true,
                     gender: true,
-                    role: true
+                    role: true,
+                    phones: true
                 }
             }
         );
@@ -37,7 +38,11 @@ class UserController {
                 role: user.role.name,
                 email: user.authentication?.email,
                 active: user.authentication?.active,
-                blocked: user.authentication?.blocked
+                blocked: user.authentication?.blocked,
+                phones: user.phones.map((phone) => ({
+                    number: phone.number,
+                    ddd: phone.ddd
+                }))
             }
         });
     }
