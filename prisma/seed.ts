@@ -108,243 +108,328 @@ const petCategories = [
 ]
 
 const products = [
-    // Ração Seca
+    // ─── Ração Seca ───────────────────────────────────────────────────────────
     {
         name: 'Ração Golden Special Cães Adultos 15kg',
+        description: 'Ração seca completa para cães adultos de todas as raças. Fórmula balanceada com proteínas de alta qualidade, vitaminas e minerais essenciais para manter a saúde, energia e pelagem brilhante do seu cão. Livre de corantes artificiais.',
         price: 189.90,
         salePrice: 169.90,
         stock: 50,
-        images: ['https://example.com/racao-golden.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=600&q=80',
+            'https://images.unsplash.com/photo-1601758124510-52d02ddb7cbd?w=600&q=80',
+        ],
         subCategory: 'Ração Seca'
     },
     {
         name: 'Ração Premier Fórmula Cães Adultos 15kg',
+        description: 'Ração super premium desenvolvida com ingredientes selecionados e tecnologia de ponta. Contém probióticos para saúde intestinal, ômega 3 e 6 para pelagem sedosa e antioxidantes para fortalecer o sistema imunológico. Indicada para cães adultos de médio e grande porte.',
         price: 249.90,
         salePrice: 229.90,
         stock: 40,
-        images: ['https://example.com/premier.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1600369671236-e74521d31107?w=600&q=80',
+            'https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=600&q=80',
+        ],
         subCategory: 'Ração Seca'
     },
     {
         name: 'Ração Royal Canin Mini Adult 10kg',
+        description: 'Alimento completo e balanceado especialmente formulado para cães adultos de raças pequenas (até 10 kg) com mais de 10 meses. Croquetes de tamanho adaptado à mandíbula pequena, com aromas exclusivos que estimulam até o apetite mais exigente. Auxilia na manutenção do peso ideal com L-carnitina e suporta a saúde da pele e pelagem.',
         price: 329.90,
         salePrice: 299.90,
         stock: 25,
-        images: ['https://example.com/royal.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1588943211346-0908a1fb0b01?w=600&q=80',
+            'https://images.unsplash.com/photo-1601758124510-52d02ddb7cbd?w=600&q=80',
+        ],
         subCategory: 'Ração Seca'
     },
 
-    // Ração Úmida
+    // ─── Ração Úmida ──────────────────────────────────────────────────────────
     {
         name: 'Sachê Pedigree Carne ao Molho 100g',
+        description: 'Alimento úmido completo para cães adultos com suculenta carne bovina ao molho. Rico em proteínas e com textura irresistível, pode ser servido sozinho ou misturado à ração seca. Sem conservantes artificiais, com vitaminas e minerais para o bem-estar diário do seu cão.',
         price: 4.99,
         salePrice: 3.99,
         stock: 300,
-        images: ['https://example.com/pedigree.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1585846416120-3a7354ed7d39?w=600&q=80',
+        ],
         subCategory: 'Ração Úmida'
     },
     {
         name: 'Sachê Whiskas Peixe 85g',
+        description: 'Alimento úmido completo para gatos adultos com delicioso peixe em molho. Formulado para atender 100% das necessidades nutricionais diárias, apoia a saúde urinária e fornece a hidratação extra que os gatos precisam. Aroma irresistível que agrada até os felinos mais seletivos.',
         price: 3.99,
         salePrice: 3.49,
         stock: 250,
-        images: ['https://example.com/whiskas.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600&q=80',
+            'https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=600&q=80',
+        ],
         subCategory: 'Ração Úmida'
     },
 
-    // Petiscos
+    // ─── Petiscos ─────────────────────────────────────────────────────────────
     {
         name: 'Bifinho Keldog Carne 500g',
+        description: 'Petisco macio e saboroso com sabor de carne bovina, ideal para recompensar e adestrar cães de qualquer raça e porte. Textura macia que facilita a mastigação, enriquecido com vitaminas para complementar a dieta do seu melhor amigo. Embalagem econômica com 500g.',
         price: 24.90,
         salePrice: 19.90,
         stock: 100,
-        images: ['https://example.com/bifinho.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1601758174493-89b9bc3a9b27?w=600&q=80',
+        ],
         subCategory: 'Petiscos'
     },
     {
         name: 'Petisco Dreamies Frango 40g',
+        description: 'Petisco crocante por fora e cremoso por dentro com sabor de frango — o favorito dos gatos! Perfeito para mimar e reforçar laços com seu felino. Baixo teor calórico, podendo ser oferecido diariamente como parte de uma dieta equilibrada.',
         price: 8.90,
         salePrice: 6.90,
         stock: 150,
-        images: ['https://example.com/dreamies.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=600&q=80',
+        ],
         subCategory: 'Petiscos'
     },
 
-    // Suplementos
+    // ─── Suplementos ──────────────────────────────────────────────────────────
     {
         name: 'Omega 3 para Cães e Gatos 60 Cápsulas',
+        description: 'Suplemento de ômega 3 de alta concentração (EPA + DHA) derivado de óleo de peixe de água fria. Promove pelagem brilhante, reduz processos inflamatórios, apoia a saúde cardiovascular e a função cognitiva de cães e gatos. Embalagem com 60 cápsulas gelatinosas de fácil administração.',
         price: 59.90,
         salePrice: 49.90,
         stock: 40,
-        images: ['https://example.com/omega3.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&q=80',
+        ],
         subCategory: 'Suplementos'
     },
 
-    // Shampoo
+    // ─── Shampoo ──────────────────────────────────────────────────────────────
     {
         name: 'Shampoo Pet Neutro 500ml',
+        description: 'Shampoo de pH neutro especialmente formulado para a pele sensível de cães e gatos. Limpa profundamente sem ressecar, hidratar e suaviza a pelagem, deixando-a macia e com brilho natural. Fórmula hipoalergênica, livre de parabenos e corantes artificiais. Fragrância suave e agradável.',
         price: 29.90,
         salePrice: 24.90,
         stock: 30,
-        images: ['https://example.com/shampoo.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1591316153282-6c38e6f05cc2?w=600&q=80',
+        ],
         subCategory: 'Shampoo'
     },
     {
         name: 'Shampoo Antipulgas 500ml',
+        description: 'Shampoo com ação inseticida e repelente contra pulgas, carrapatos e sarnas. Elimina os parasitas durante o banho com eficácia comprovada, além de limpar, perfumar e conferir brilho à pelagem. Compostos ativos de origem natural. Indicado para cães a partir de 3 meses de idade.',
         price: 39.90,
         salePrice: 34.90,
         stock: 25,
-        images: ['https://example.com/shampoo-antipulgas.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1591316153282-6c38e6f05cc2?w=600&q=80',
+        ],
         subCategory: 'Shampoo'
     },
 
-    // Condicionador
+    // ─── Condicionador ────────────────────────────────────────────────────────
     {
         name: 'Condicionador Hidratante Pet 500ml',
+        description: 'Condicionador de uso profissional para cães e gatos com pelagem longa ou propensa a embaraçar. Rico em proteínas da seda e extrato de aloe vera, proporciona hidratação profunda, facilita o desembaraço e reduz o volume, deixando o pelo sedoso e com brilho intenso.',
         price: 32.90,
         salePrice: 27.90,
         stock: 20,
-        images: ['https://example.com/condicionador.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1591316153282-6c38e6f05cc2?w=600&q=80',
+        ],
         subCategory: 'Condicionador'
     },
 
-    // Escova e Pente
+    // ─── Escova e Pente ───────────────────────────────────────────────────────
     {
         name: 'Escova Removedora de Pelos',
+        description: 'Escova ergonômica com cerdas de aço inoxidável especialmente projetadas para remover pelos soltos, nós e impurezas da pelagem de cães e gatos. O cabo antiderrapante garante conforto e controle durante a escovação. Estimula a circulação sanguínea da pele e distribui os óleos naturais do pelo.',
         price: 49.90,
         salePrice: 39.90,
         stock: 35,
-        images: ['https://example.com/escova.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1576201836106-db1758fd1c97?w=600&q=80',
+        ],
         subCategory: 'Escova e Pente'
     },
 
-    // Perfume
+    // ─── Perfume Pet ──────────────────────────────────────────────────────────
     {
         name: 'Perfume Pet Lavanda 120ml',
+        description: 'Colônia com suave fragrância de lavanda, desenvolvida especialmente para cães e gatos. Fórmula aquosa de longa duração que neutraliza odores e deixa o pet cheiroso entre os banhos. Não contém álcool, sendo seguro para uso frequente. Basta borrifar suavemente sobre a pelagem.',
         price: 19.90,
         salePrice: 15.90,
         stock: 45,
-        images: ['https://example.com/perfume.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=600&q=80',
+        ],
         subCategory: 'Perfume Pet'
     },
 
-    // Antiparasitários
+    // ─── Antiparasitários ─────────────────────────────────────────────────────
     {
         name: 'Antipulgas Simparic 20mg',
+        description: 'Comprimido mastigável com sabor agradável para prevenção e tratamento de infestações por pulgas e carrapatos em cães de 2,6 a 5 kg. Ação rápida: começa a eliminar pulgas em 3 horas e carrapatos em 8 horas. Proteção contínua por 35 dias. Administração mensal e conveniente.',
         price: 69.90,
         salePrice: 64.90,
         stock: 60,
-        images: ['https://example.com/simparic.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1576201836106-db1758fd1c97?w=600&q=80',
+        ],
         subCategory: 'Antiparasitários'
     },
     {
         name: 'Antipulgas NexGard 28mg',
+        description: 'Comprimido mastigável com sabor de carne para cães de 4 a 10 kg. Elimina pulgas antes que possam botar ovos e combate carrapatos das principais espécies. Proteção completa de 30 dias com dose única mensal. O princípio ativo afoxolaner age no sistema nervoso dos parasitas, sem risco para o cão.',
         price: 79.90,
         salePrice: 74.90,
         stock: 50,
-        images: ['https://example.com/nexgard.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1576201836106-db1758fd1c97?w=600&q=80',
+        ],
         subCategory: 'Antiparasitários'
     },
 
-    // Vitaminas
+    // ─── Vitaminas ────────────────────────────────────────────────────────────
     {
         name: 'Vitamina A-Z Pet 60 Comprimidos',
+        description: 'Suplemento multivitamínico e mineral completo para cães e gatos adultos. Contém vitaminas A, C, D, E, complexo B, zinco, biotina e selênio para suprir eventuais carências nutricionais, fortalecer o sistema imunológico, melhorar a saúde da pele e pelagem. Comprimidos palatáveis com sabor de carne.',
         price: 44.90,
         salePrice: 39.90,
         stock: 30,
-        images: ['https://example.com/vitamina.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&q=80',
+        ],
         subCategory: 'Vitaminas'
     },
 
-    // Coleiras
+    // ─── Coleiras ─────────────────────────────────────────────────────────────
     {
         name: 'Coleira Ajustável para Cães',
+        description: 'Coleira de nylon resistente com fivela de alumínio de alta durabilidade. Tamanho ajustável para garantir conforto e segurança ao pescoço do cão. Anel em D robusto para fixação da guia e plaquinha de identificação. Disponível em diversas cores vibrantes. Indicada para uso diário em cães de pequeno a médio porte.',
         price: 39.90,
         salePrice: 34.90,
         stock: 20,
-        images: ['https://example.com/coleira.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1601758066301-4d0b4b8b3a2c?w=600&q=80',
+            'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80',
+        ],
         subCategory: 'Coleiras'
     },
     {
         name: 'Coleira de Couro Premium',
+        description: 'Coleira artesanal confeccionada em couro legítimo curtido, com costuras reforçadas e ferragens em latão envelhecido. Design elegante e atemporal que combina durabilidade com estilo. Forrada internamente para não agredir a pele do cão. Ideal para cães de médio e grande porte que merecem o melhor.',
         price: 69.90,
         salePrice: 59.90,
         stock: 15,
-        images: ['https://example.com/coleira-couro.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80',
+        ],
         subCategory: 'Coleiras'
     },
 
-    // Guias
+    // ─── Guias e Peitorais ────────────────────────────────────────────────────
     {
         name: 'Guia Retrátil 5m',
+        description: 'Guia retrátil com cabo de nylon embutido que se estende até 5 metros, dando liberdade controlada ao cão durante os passeios. Mecanismo de trava instantânea e botão de freio ergonômico para controle fácil e seguro. Cabo resistente suporta até 25 kg. Indicada para cães de pequeno a médio porte.',
         price: 89.90,
         salePrice: 79.90,
         stock: 20,
-        images: ['https://example.com/guia.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1601758066301-4d0b4b8b3a2c?w=600&q=80',
+        ],
         subCategory: 'Guias e Peitorais'
     },
 
-    // Camas
+    // ─── Camas e Casinhas ─────────────────────────────────────────────────────
     {
         name: 'Cama Pet Redonda Média',
+        description: 'Cama redonda com bordas elevadas que proporcionam sensação de aconchego e segurança para cães e gatos. Preenchimento em espuma de alta densidade para suporte ortopédico e conforto máximo. Capa removível e lavável em máquina. Tecido macio e antialérgico. Tamanho médio, ideal para pets de até 10 kg.',
         price: 129.90,
         salePrice: 109.90,
         stock: 15,
-        images: ['https://example.com/cama.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1601758174493-89b9bc3a9b27?w=600&q=80',
+            'https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?w=600&q=80',
+        ],
         subCategory: 'Camas e Casinhas'
     },
     {
         name: 'Casinha Plástica Grande',
+        description: 'Casinha em plástico resistente de alta densidade com ventilação lateral e telhado removível para fácil limpeza. Design anatômico com entrada frontal ampla e piso elevado para proteção contra umidade. Resistente a raios UV e intempéries, ideal para uso externo ou interno. Para cães de grande porte de até 40 kg.',
         price: 249.90,
         salePrice: 219.90,
         stock: 10,
-        images: ['https://example.com/casinha.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80',
+        ],
         subCategory: 'Camas e Casinhas'
     },
 
-    // Brinquedos Cães
+    // ─── Brinquedos para Cães ─────────────────────────────────────────────────
     {
         name: 'Mordedor de Borracha Resistente',
+        description: 'Mordedor fabricado em borracha natural 100% atóxica e ultrarresistente, desenvolvido para cães que adoram mastigar. Ajuda na higiene dental ao reduzir o acúmulo de tártaro durante a mordida. Textura irregular estimula as gengivas e entretém o pet por horas. Disponível em tamanhos P, M e G.',
         price: 24.90,
         salePrice: 19.90,
         stock: 80,
-        images: ['https://example.com/mordedor.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1601758124510-52d02ddb7cbd?w=600&q=80',
+        ],
         subCategory: 'Brinquedos para Cães'
     },
     {
         name: 'Bola Interativa para Cães',
+        description: 'Bola interativa com compartimento interno para inserir petiscos ou ração, estimulando o instinto natural de forrageamento do cão. Fabricada em borracha resistente e atóxica, suporta mordidas intensas. Promove atividade física e enriquecimento ambiental, combatendo o tédio e comportamentos destrutivos.',
         price: 34.90,
         salePrice: 29.90,
         stock: 60,
-        images: ['https://example.com/bola.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1507146426996-ef05306b995a?w=600&q=80',
+            'https://images.unsplash.com/photo-1601758124510-52d02ddb7cbd?w=600&q=80',
+        ],
         subCategory: 'Brinquedos para Cães'
     },
 
-    // Brinquedos Gatos
+    // ─── Brinquedos para Gatos ────────────────────────────────────────────────
     {
         name: 'Varinha com Pena para Gatos',
+        description: 'Varinha interativa com penas coloridas na ponta que simula o movimento de um pássaro, despertando o instinto caçador dos gatos. Haste flexível de fibra de carbono que imita movimentos imprevisíveis. Ideal para sessões de brincadeira diária que estimulam o exercício físico e o vínculo entre tutor e pet.',
         price: 19.90,
         salePrice: 14.90,
         stock: 70,
-        images: ['https://example.com/varinha.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600&q=80',
+        ],
         subCategory: 'Brinquedos para Gatos'
     },
     {
         name: 'Ratinho de Pelúcia Catnip',
+        description: 'Brinquedo em pelúcia no formato de ratinho recheado com catnip (erva-do-gato) 100% natural certificada. O aroma do catnip estimula e euforia natural nos gatos, promovendo brincadeiras ativas e reduzindo o estresse. Tamanho ideal para ser carregado, jogado e abraçado pelo seu felino.',
         price: 14.90,
         salePrice: 11.90,
         stock: 100,
-        images: ['https://example.com/ratinho.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=600&q=80',
+        ],
         subCategory: 'Brinquedos para Gatos'
     },
 
-    // Brinquedos Aves
+    // ─── Brinquedos para Aves ─────────────────────────────────────────────────
     {
         name: 'Balanço Colorido para Calopsitas',
+        description: 'Balanço em madeira natural não tóxica com cordas de algodão e contas coloridas de plástico atóxico. Estimula o equilíbrio, a coordenação motora e o entretenimento de calopsitas, periquitos e outros pássaros de pequeno porte. Gancho de metal inoxidável para fixação fácil na grade da gaiola.',
         price: 24.90,
         salePrice: 19.90,
         stock: 25,
-        images: ['https://example.com/balanco.jpg'],
+        images: [
+            'https://images.unsplash.com/photo-1444464666168-49d633b86797?w=600&q=80',
+        ],
         subCategory: 'Brinquedos para Aves'
     }
 ];
@@ -436,6 +521,7 @@ async function main() {
                 name: p.name
             },
             update: {
+                description: p.description,
                 price: p.price,
                 salePrice: p.salePrice,
                 stock: p.stock,
@@ -443,14 +529,15 @@ async function main() {
             },
             create: {
                 name: p.name,
+                description: p.description,
                 price: p.price,
                 salePrice: p.salePrice,
                 stock: p.stock,
                 images: p.images,
                 subCategories: {
-                create: {
-                    subCategoryId: subCategory.id
-                }
+                    create: {
+                        subCategoryId: subCategory.id
+                    }
                 }
             }
         }); 

@@ -269,6 +269,7 @@ model product {
   price         Float
   salePrice         Float @default(0)
   images         String[]
+  description   String
   stock         Int                   @default(0)
   active        Boolean               @default(true)
   isDelete      Boolean               @default(false)
