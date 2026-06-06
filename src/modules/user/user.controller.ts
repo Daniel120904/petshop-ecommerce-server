@@ -10,14 +10,37 @@ class UserController {
     async getUser(req: ValidatedRequest<typeof userSchema.get>, res: Response) {
         const { userId } = req.validated;
 
-        const result = await userRepository.findUnique(
+        const user = await userRepository.findUnique(
+            { id: userId },
             {
-                id: userId
+                include: {
+                    authentication: true,
+                    gender: true,
+                    role: true
+                }
             }
         );
 
+        if (!user) {
+            return res.status(404).json({
+                message: "Usuário não encontrado"
+            });
+        }
+
         return res.status(200).json({
-            data: result,
+            data: {
+                id: user.id,
+                name: user.name,
+                birthday: user.birthday,
+                cpf: user.cpf,
+                gender: user.gender,
+                role: user.role,
+                authentication: {
+                    email: user.authentication?.email,
+                    active: user.authentication?.active,
+                    blocked: user.authentication?.blocked
+                }
+            }
         });
     }
 
@@ -37,12 +60,30 @@ class UserController {
                     page,
                     pageSize
                 },
-                orderBy
-            }
+                orderBy,
+                include: {
+                    authentication: true,
+                    gender: true,
+                    role: true
+                }
+            }        
         );
 
         return res.status(200).json({
-            data: result,
+            data: result.data.map(user => ({
+                id: user.id,
+                name: user.name,
+                birthday: user.birthday,
+                cpf: user.cpf,
+                gender: user.gender,
+                role: user.role.name,
+                authentication: {
+                    email: user.authentication?.email,
+                    active: user.authentication?.active,
+                    blocked: user.authentication?.blocked
+                }
+            })),
+            meta: result.meta
         });
     }
 
