@@ -107,6 +107,248 @@ const petCategories = [
     },
 ]
 
+const products = [
+    // Ração Seca
+    {
+        name: 'Ração Golden Special Cães Adultos 15kg',
+        price: 189.90,
+        salePrice: 169.90,
+        stock: 50,
+        images: ['https://example.com/racao-golden.jpg'],
+        subCategory: 'Ração Seca'
+    },
+    {
+        name: 'Ração Premier Fórmula Cães Adultos 15kg',
+        price: 249.90,
+        salePrice: 229.90,
+        stock: 40,
+        images: ['https://example.com/premier.jpg'],
+        subCategory: 'Ração Seca'
+    },
+    {
+        name: 'Ração Royal Canin Mini Adult 10kg',
+        price: 329.90,
+        salePrice: 299.90,
+        stock: 25,
+        images: ['https://example.com/royal.jpg'],
+        subCategory: 'Ração Seca'
+    },
+
+    // Ração Úmida
+    {
+        name: 'Sachê Pedigree Carne ao Molho 100g',
+        price: 4.99,
+        salePrice: 3.99,
+        stock: 300,
+        images: ['https://example.com/pedigree.jpg'],
+        subCategory: 'Ração Úmida'
+    },
+    {
+        name: 'Sachê Whiskas Peixe 85g',
+        price: 3.99,
+        salePrice: 3.49,
+        stock: 250,
+        images: ['https://example.com/whiskas.jpg'],
+        subCategory: 'Ração Úmida'
+    },
+
+    // Petiscos
+    {
+        name: 'Bifinho Keldog Carne 500g',
+        price: 24.90,
+        salePrice: 19.90,
+        stock: 100,
+        images: ['https://example.com/bifinho.jpg'],
+        subCategory: 'Petiscos'
+    },
+    {
+        name: 'Petisco Dreamies Frango 40g',
+        price: 8.90,
+        salePrice: 6.90,
+        stock: 150,
+        images: ['https://example.com/dreamies.jpg'],
+        subCategory: 'Petiscos'
+    },
+
+    // Suplementos
+    {
+        name: 'Omega 3 para Cães e Gatos 60 Cápsulas',
+        price: 59.90,
+        salePrice: 49.90,
+        stock: 40,
+        images: ['https://example.com/omega3.jpg'],
+        subCategory: 'Suplementos'
+    },
+
+    // Shampoo
+    {
+        name: 'Shampoo Pet Neutro 500ml',
+        price: 29.90,
+        salePrice: 24.90,
+        stock: 30,
+        images: ['https://example.com/shampoo.jpg'],
+        subCategory: 'Shampoo'
+    },
+    {
+        name: 'Shampoo Antipulgas 500ml',
+        price: 39.90,
+        salePrice: 34.90,
+        stock: 25,
+        images: ['https://example.com/shampoo-antipulgas.jpg'],
+        subCategory: 'Shampoo'
+    },
+
+    // Condicionador
+    {
+        name: 'Condicionador Hidratante Pet 500ml',
+        price: 32.90,
+        salePrice: 27.90,
+        stock: 20,
+        images: ['https://example.com/condicionador.jpg'],
+        subCategory: 'Condicionador'
+    },
+
+    // Escova e Pente
+    {
+        name: 'Escova Removedora de Pelos',
+        price: 49.90,
+        salePrice: 39.90,
+        stock: 35,
+        images: ['https://example.com/escova.jpg'],
+        subCategory: 'Escova e Pente'
+    },
+
+    // Perfume
+    {
+        name: 'Perfume Pet Lavanda 120ml',
+        price: 19.90,
+        salePrice: 15.90,
+        stock: 45,
+        images: ['https://example.com/perfume.jpg'],
+        subCategory: 'Perfume Pet'
+    },
+
+    // Antiparasitários
+    {
+        name: 'Antipulgas Simparic 20mg',
+        price: 69.90,
+        salePrice: 64.90,
+        stock: 60,
+        images: ['https://example.com/simparic.jpg'],
+        subCategory: 'Antiparasitários'
+    },
+    {
+        name: 'Antipulgas NexGard 28mg',
+        price: 79.90,
+        salePrice: 74.90,
+        stock: 50,
+        images: ['https://example.com/nexgard.jpg'],
+        subCategory: 'Antiparasitários'
+    },
+
+    // Vitaminas
+    {
+        name: 'Vitamina A-Z Pet 60 Comprimidos',
+        price: 44.90,
+        salePrice: 39.90,
+        stock: 30,
+        images: ['https://example.com/vitamina.jpg'],
+        subCategory: 'Vitaminas'
+    },
+
+    // Coleiras
+    {
+        name: 'Coleira Ajustável para Cães',
+        price: 39.90,
+        salePrice: 34.90,
+        stock: 20,
+        images: ['https://example.com/coleira.jpg'],
+        subCategory: 'Coleiras'
+    },
+    {
+        name: 'Coleira de Couro Premium',
+        price: 69.90,
+        salePrice: 59.90,
+        stock: 15,
+        images: ['https://example.com/coleira-couro.jpg'],
+        subCategory: 'Coleiras'
+    },
+
+    // Guias
+    {
+        name: 'Guia Retrátil 5m',
+        price: 89.90,
+        salePrice: 79.90,
+        stock: 20,
+        images: ['https://example.com/guia.jpg'],
+        subCategory: 'Guias e Peitorais'
+    },
+
+    // Camas
+    {
+        name: 'Cama Pet Redonda Média',
+        price: 129.90,
+        salePrice: 109.90,
+        stock: 15,
+        images: ['https://example.com/cama.jpg'],
+        subCategory: 'Camas e Casinhas'
+    },
+    {
+        name: 'Casinha Plástica Grande',
+        price: 249.90,
+        salePrice: 219.90,
+        stock: 10,
+        images: ['https://example.com/casinha.jpg'],
+        subCategory: 'Camas e Casinhas'
+    },
+
+    // Brinquedos Cães
+    {
+        name: 'Mordedor de Borracha Resistente',
+        price: 24.90,
+        salePrice: 19.90,
+        stock: 80,
+        images: ['https://example.com/mordedor.jpg'],
+        subCategory: 'Brinquedos para Cães'
+    },
+    {
+        name: 'Bola Interativa para Cães',
+        price: 34.90,
+        salePrice: 29.90,
+        stock: 60,
+        images: ['https://example.com/bola.jpg'],
+        subCategory: 'Brinquedos para Cães'
+    },
+
+    // Brinquedos Gatos
+    {
+        name: 'Varinha com Pena para Gatos',
+        price: 19.90,
+        salePrice: 14.90,
+        stock: 70,
+        images: ['https://example.com/varinha.jpg'],
+        subCategory: 'Brinquedos para Gatos'
+    },
+    {
+        name: 'Ratinho de Pelúcia Catnip',
+        price: 14.90,
+        salePrice: 11.90,
+        stock: 100,
+        images: ['https://example.com/ratinho.jpg'],
+        subCategory: 'Brinquedos para Gatos'
+    },
+
+    // Brinquedos Aves
+    {
+        name: 'Balanço Colorido para Calopsitas',
+        price: 24.90,
+        salePrice: 19.90,
+        stock: 25,
+        images: ['https://example.com/balanco.jpg'],
+        subCategory: 'Brinquedos para Aves'
+    }
+];
+
 async function main() {
     await createApiUser();
     
@@ -178,6 +420,41 @@ async function main() {
             },
         },
     });
+
+    // Produtos
+    for (const p of products) {
+        const subCategory = await prisma.sub_category.findUnique({
+            where: {
+                name: p.subCategory
+            }
+        });
+
+        if (!subCategory) continue;
+
+        await prisma.product.upsert({
+            where: {
+                name: p.name
+            },
+            update: {
+                price: p.price,
+                salePrice: p.salePrice,
+                stock: p.stock,
+                images: p.images
+            },
+            create: {
+                name: p.name,
+                price: p.price,
+                salePrice: p.salePrice,
+                stock: p.stock,
+                images: p.images,
+                subCategories: {
+                create: {
+                    subCategoryId: subCategory.id
+                }
+                }
+            }
+        }); 
+    }
 
     console.log('Seed concluído!');
 }
