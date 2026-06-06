@@ -33,13 +33,11 @@ class UserController {
                 name: user.name,
                 birthday: user.birthday,
                 cpf: user.cpf,
-                gender: user.gender,
-                role: user.role,
-                authentication: {
-                    email: user.authentication?.email,
-                    active: user.authentication?.active,
-                    blocked: user.authentication?.blocked
-                }
+                gender: user.gender.name,
+                role: user.role.name,
+                email: user.authentication?.email,
+                active: user.authentication?.active,
+                blocked: user.authentication?.blocked
             }
         });
     }
@@ -75,13 +73,11 @@ class UserController {
                 name: user.name,
                 birthday: user.birthday,
                 cpf: user.cpf,
-                gender: user.gender,
+                email: user.authentication?.email,
+                active: user.authentication?.active,
+                blocked: user.authentication?.blocked,
+                gender: user.gender.name,
                 role: user.role.name,
-                authentication: {
-                    email: user.authentication?.email,
-                    active: user.authentication?.active,
-                    blocked: user.authentication?.blocked
-                }
             })),
             meta: result.meta
         });
