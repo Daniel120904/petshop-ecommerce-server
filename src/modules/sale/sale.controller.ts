@@ -3,6 +3,7 @@ import { saleSchema } from "./sale.schema";
 import { Request, Response } from 'express';
 import saleService from "./sale.service";
 import saleRepository from "./sale.repository";
+import { PermissionLevel } from "../../utils/constants/permission.constants";
 
 class SaleController {
     async createSale(req: ValidatedRequest<typeof saleSchema.createSale>, res: Response) {
@@ -53,11 +54,16 @@ class SaleController {
 
     async getSales(req: ValidatedRequest<typeof saleSchema.getSales>, res: Response) {
         const { orderBy, page, pageSize } = req.validated;
+        const { userId, permission } = req.user!
+ 
+        const filters: any = {};
+
+        if (permission === PermissionLevel.USER) {
+            filters.userId = userId;
+        }
 
         const result = await saleRepository.findMany(
-            {
-
-            },
+            filters,
             {
                 include: {
                     items: {
