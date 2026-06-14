@@ -59,7 +59,7 @@ export const PERMISSIONS = {
             { path: '/coupon/check', methods: ['GET'] },
 
             //Vendas
-            { path: '/sale', methods: ['POST', 'PATCH'] },
+            { path: '/sale', methods: ['POST', 'PATCH', 'GET'] },
             { path: '/sale/:userId', methods: ['GET'] },
             { path: '/sale/cancel', methods: ['PATCH'] },
         ],
