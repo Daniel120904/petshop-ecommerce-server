@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const auth_controller_1 = __importDefault(require("./auth.controller"));
+const auth_schema_1 = require("./auth.schema");
+const validate_middleware_1 = require("../../middlewares/validate.middleware");
+const router = (0, express_1.Router)();
+router.post("/login", (0, validate_middleware_1.validate)((req, res) => auth_controller_1.default.login(req, res), auth_schema_1.authSchema.login));
+router.post("/register", (0, validate_middleware_1.validate)((req, res) => auth_controller_1.default.register(req, res), auth_schema_1.authSchema.register));
+router.post("/refresh", (0, validate_middleware_1.validate)((req, res) => auth_controller_1.default.refresh(req, res), auth_schema_1.authSchema.refresh));
+router.post("/logout", (0, validate_middleware_1.validate)((req, res) => auth_controller_1.default.logout(req, res), auth_schema_1.authSchema.logout));
+router.patch("/password", (0, validate_middleware_1.validate)((req, res) => auth_controller_1.default.updatePassword(req, res), auth_schema_1.authSchema.updatePassword));
+router.patch("/user/blocked", (0, validate_middleware_1.validate)((req, res) => auth_controller_1.default.blockUser(req, res), auth_schema_1.authSchema.blockUser));
+router.patch("/user/active", (0, validate_middleware_1.validate)((req, res) => auth_controller_1.default.activeUser(req, res), auth_schema_1.authSchema.activeUser));
+router.put("/user", (0, validate_middleware_1.validate)((req, res) => auth_controller_1.default.updateUser(req, res), auth_schema_1.authSchema.updateUser));
+router.get("/me", (req, res) => auth_controller_1.default.me(req, res));
+exports.default = router;

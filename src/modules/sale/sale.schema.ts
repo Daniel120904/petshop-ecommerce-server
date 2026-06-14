@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { payment_type, sale_status } from '../../generated/prisma';
+import { PaymentType, SaleStatus } from '@prisma/client';
 import { coerceId } from '../../utils/schemas';
 import { enumFromString, validatePagination } from '../../utils/schemas/common.schema';
 
@@ -13,13 +13,13 @@ export const saleSchema = {
         ),
         coupons: z.array(z.string()).optional(),
         addressId: coerceId('Endereco'),
-        paymentType: enumFromString(payment_type),
+        paymentType: enumFromString(PaymentType),
         cardId: coerceId('Cartao').optional(),
     }),
 
     updateStatus: z.object({
         saleId: coerceId('Venda'),
-        status: enumFromString(sale_status)
+        status: enumFromString(SaleStatus)
     }),
 
     cancelSale: z.object({

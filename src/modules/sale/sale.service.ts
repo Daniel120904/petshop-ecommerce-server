@@ -1,8 +1,7 @@
-import { payment_type, sale_status } from "../../generated/prisma";
+import { PaymentType, SaleStatus } from '@prisma/client';
 import { BASE_STATUS_FLOW } from "../../utils/constants/sale.constants";
 import { removeTransitions } from "../../utils/helpers/sale.helper";
 import addressRepository from "../address/address.repository";
-import couponRepository from "../coupon/coupon.repository";
 import couponService from "../coupon/coupon.service";
 import productRepository from "../product/product.repository";
 import saleRepository from "./sale.repository";
@@ -17,7 +16,7 @@ class SaleService {
             productId: number,
             quantity: number
         }[],
-        paymentType: payment_type
+        paymentType: PaymentType
     }) {
         const productIds = req.products.map(p => p.productId);
 
@@ -107,7 +106,7 @@ class SaleService {
 
     async updateStatus(req: {
         saleId: number,
-        status: sale_status
+        status: SaleStatus
     }) {
         const sale = await saleRepository.findUnique(
             {
@@ -123,7 +122,7 @@ class SaleService {
 
         if(!sale) throw new Error('Venda nao encontrada');
 
-        const flowWithoutCancel = removeTransitions(BASE_STATUS_FLOW, [sale_status.canceled]);
+        const flowWithoutCancel = removeTransitions(BASE_STATUS_FLOW, [SaleStatus.canceled]);
 
         if (!flowWithoutCancel[sale.status].includes(req.status)) {
             throw new Error('Status inválido');
@@ -159,7 +158,7 @@ class SaleService {
 
         if(!sale) throw new Error('Venda nao encontrada');
 
-        const flowWithoutCancel = removeTransitions(BASE_STATUS_FLOW, [sale_status.approved, sale_status.delivered, sale_status.processing, sale_status.shipped]);
+        const flowWithoutCancel = removeTransitions(BASE_STATUS_FLOW, [SaleStatus.approved, SaleStatus.delivered, SaleStatus.processing, SaleStatus.shipped]);
 
         if (!flowWithoutCancel[sale.status].includes('canceled')) {
             throw new Error('Venda nao pode ser cancelada');

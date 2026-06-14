@@ -1,6 +1,6 @@
-import { phone_type } from "../../generated/prisma";
+import { PhoneType } from '@prisma/client';
 
 
-export function getPhoneType(number: string): phone_type {
-    return number.length === 9 ? phone_type.cellphone : phone_type.telephone;
+export function getPhoneType(number: string): PhoneType {
+    return number.length === 9 ? PhoneType.cellphone : PhoneType.telephone;
 }

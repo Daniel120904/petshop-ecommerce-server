@@ -1,7 +1,6 @@
 //infrastructure/gemini/recommendationAi.ts
 
 import { GoogleGenAI } from "@google/genai";
-import "dotenv/config"; // Para carregar a GEMINI_API_KEY
 import productRepository from "../../modules/product/product.repository";
 
 // Inicializa o cliente Gemini

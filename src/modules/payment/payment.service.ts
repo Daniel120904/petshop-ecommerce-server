@@ -1,11 +1,11 @@
-import { card_brand } from "../../generated/prisma";
+import { CardBrand } from '@prisma/client';
 import cardRepository from "./card.repository";
 
 class PaymentService {
     async createCard(userId: number, data: {
         nickname: string;
         holder: string;
-        brand: card_brand;
+        brand: CardBrand;
         number: string;
     }) {
         const card = await cardRepository.findFirst(

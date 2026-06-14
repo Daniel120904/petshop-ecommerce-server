@@ -1,5 +1,5 @@
 import { BaseRepository, PaginationMeta } from "../base/base.repository";
-import { Prisma } from "../generated/prisma";
+import { Prisma } from '@prisma/client';
 
 type PrismaDelegate = {
     findFirst: (...args: any) => any;

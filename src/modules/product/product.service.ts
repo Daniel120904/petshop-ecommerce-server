@@ -1,13 +1,7 @@
-import { includes } from "zod";
-import { card_brand } from "../../generated/prisma";
 import { validateSubCategories } from "../../utils/helpers/category.helper";
 import cartRepository from "./cart.repository";
-import categoryRepository from "./category.repository";
 import productRepository from "./product.repository";
 import productSubCategoryRepository from "./productSubCategory.repository";
-import subCategoryRepository from "./subCategory.repository";
-import cardRepository from "../payment/card.repository";
-
 
 class ProductService {
     async createProduct(req: {

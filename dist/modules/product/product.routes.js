@@ -1,0 +1,24 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const validate_middleware_1 = require("../../middlewares/validate.middleware");
+const product_schema_1 = require("./product.schema");
+const product_controller_1 = __importDefault(require("./product.controller"));
+const router = (0, express_1.Router)();
+router.get("/product", (0, validate_middleware_1.validate)((req, res) => product_controller_1.default.getProducts(req, res), product_schema_1.productSchema.listProduct));
+router.get("/product/:productId", (0, validate_middleware_1.validate)((req, res) => product_controller_1.default.getProduct(req, res), product_schema_1.productSchema.getProduct));
+router.post("/product", (0, validate_middleware_1.validate)((req, res) => product_controller_1.default.createProduct(req, res), product_schema_1.productSchema.createProduct));
+router.patch("/product/active", (0, validate_middleware_1.validate)((req, res) => product_controller_1.default.activeProduct(req, res), product_schema_1.productSchema.activeProduct));
+router.delete("/product", (0, validate_middleware_1.validate)((req, res) => product_controller_1.default.deleteProduct(req, res), product_schema_1.productSchema.deleteProduct));
+router.put("/product", (0, validate_middleware_1.validate)((req, res) => product_controller_1.default.editProduct(req, res), product_schema_1.productSchema.editProduct));
+router.get("/cart", (0, validate_middleware_1.validate)((req, res) => product_controller_1.default.getCart(req, res)));
+router.post("/cart", (0, validate_middleware_1.validate)((req, res) => product_controller_1.default.addCart(req, res), product_schema_1.productSchema.addCart));
+router.delete("/cart", (0, validate_middleware_1.validate)((req, res) => product_controller_1.default.removeCart(req, res), product_schema_1.productSchema.removeCart));
+router.put("/cart", (0, validate_middleware_1.validate)((req, res) => product_controller_1.default.updateCart(req, res), product_schema_1.productSchema.updateCart));
+router.get("/subCategory", (0, validate_middleware_1.validate)((req, res) => product_controller_1.default.getSubCategories(req, res), product_schema_1.productSchema.getSubCategories));
+router.get("/category", (0, validate_middleware_1.validate)((req, res) => product_controller_1.default.getCategories(req, res)));
+router.post("/chatBot", (0, validate_middleware_1.validate)((req, res) => product_controller_1.default.chatBot(req, res), product_schema_1.productSchema.chatBotReq));
+exports.default = router;

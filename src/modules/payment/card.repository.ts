@@ -1,5 +1,5 @@
 import { TypedRepository } from '../../base/base.typed-repository';
-import { Prisma } from '../../generated/prisma';
+import { Prisma } from '@prisma/client';
 import { prisma } from '../../core/database/prisma.client';
 
 class CardRepository extends TypedRepository<typeof prisma.card> {

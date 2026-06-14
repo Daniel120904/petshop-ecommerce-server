@@ -1,14 +1,14 @@
-import { sale_status } from "../../generated/prisma";
+import { SaleStatus } from '@prisma/client';
 
 
 export function removeTransitions(
-    flow: Record<sale_status, sale_status[]>,
-    blocked: sale_status[]
-): Record<sale_status, sale_status[]> {
-    const newFlow: Record<sale_status, sale_status[]> = {} as any;
+    flow: Record<SaleStatus, SaleStatus[]>,
+    blocked: SaleStatus[]
+): Record<SaleStatus, SaleStatus[]> {
+    const newFlow: Record<SaleStatus, SaleStatus[]> = {} as any;
 
     for (const status in flow) {
-        newFlow[status as sale_status] = flow[status as sale_status].filter(
+        newFlow[status as SaleStatus] = flow[status as SaleStatus].filter(
             s => !blocked.includes(s)
         );
     }

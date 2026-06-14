@@ -1,4 +1,4 @@
-import { PrismaClient } from '../src/generated/prisma';
+import { PrismaClient } from '@prisma/client';
 import { RoleName } from '../src/utils/constants/role.constants';
 import { GenderName } from '../src/utils/constants/gender.constants';
 import bcrypt from 'bcrypt';
@@ -438,7 +438,7 @@ async function main() {
     await createApiUser();
     
     // Roles
-    for (const role of Object.values(RoleName)) {
+    for (const role of Object.values(RoleName) as string[]) {
         await prisma.role.upsert({
             where: { name: role },
             update: {},
@@ -447,7 +447,7 @@ async function main() {
     }
 
     // Genders
-    for (const name of Object.values(GenderName)) {
+    for (const name of Object.values(GenderName) as string[]) {
         await prisma.gender.upsert({
             where: { name },
             update: {},

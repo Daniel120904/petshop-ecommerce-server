@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { coupon_type } from '../../generated/prisma';
+import { CouponType } from '@prisma/client';
 import { enumFromString, validatePagination } from '../../utils/schemas/common.schema';
 
 export const couponSchema = {
     create: z.object({
-        type: enumFromString(coupon_type),
+        type: enumFromString(CouponType),
         discount: z.number().positive(),
         maxUses: z.number().positive().optional()
     }),
@@ -17,7 +17,7 @@ export const couponSchema = {
 
     update: z.object({
         couponId: z.number(),
-        type: enumFromString(coupon_type).optional(),
+        type: enumFromString(CouponType).optional(),
         discount: z.number().positive().optional(),
         maxUses: z.number().positive().optional()
     }),

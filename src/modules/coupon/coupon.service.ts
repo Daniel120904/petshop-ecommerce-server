@@ -1,4 +1,4 @@
-import { coupon_type } from "../../generated/prisma";
+import { CouponType } from '@prisma/client';
 import { generateCouponCode } from "../../utils/helpers/coupon.helper";
 import couponRepository from "./coupon.repository";
 
@@ -7,7 +7,7 @@ class CouponService {
         throw new Error("Method not implemented.");
     }
     async create(req: {
-        type: coupon_type,
+        type: CouponType,
         discount: number,
         maxUses?: number
     }) {
@@ -52,7 +52,7 @@ class CouponService {
         maxUses?: number,
         value?: {
             discount: number,
-            type: coupon_type
+            type: CouponType
         }
     }) {
         const coupon = await couponRepository.findUnique(

@@ -1,7 +1,4 @@
-import dotenv from 'dotenv';
 import { StringValue } from 'ms';
-
-dotenv.config();
 
 if (!process.env.JWT_SECRET) {
     throw new Error("JWT_SECRET não definido no arquivo .env");

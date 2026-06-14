@@ -1,8 +1,8 @@
-import { phone_type } from "../../generated/prisma";
+import { PhoneType } from '@prisma/client';
 import phoneRepository from "./phone.repository";
 
 class PhoneService {
-    async create(userId: number, number: string, type: phone_type, ddd: string) {
+    async create(userId: number, number: string, type: PhoneType, ddd: string) {
         return await phoneRepository.create(
             {
                 userId,

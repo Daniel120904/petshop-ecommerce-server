@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -27,22 +26,21 @@ datasource db {
   npx prisma db seed
 */
 
-
 // ============================================
-// ENUMS
+// ENUMS (CORRIGIDOS)
 // ============================================
 
-enum phone_type {
+enum PhoneType {
   telephone
   cellphone
 }
 
-enum coupon_type {
+enum CouponType {
   percent
   value
 }
 
-enum card_brand {
+enum CardBrand {
   visa
   mastercard
   amex
@@ -50,28 +48,26 @@ enum card_brand {
   hipercard
 }
 
-enum payment_type {
+enum PaymentType {
   card
   pix
   boleto
 }
 
-enum payment_status {
+enum PaymentStatus {
   canceled
   refunded
   pending
   paid
 }
 
-enum sale_status {
+enum SaleStatus {
   processing
   approved
   shipped
   delivered
   canceled
 }
-
-
 
 // ============================================
 // AUTH
@@ -122,32 +118,28 @@ model active_token {
   updatedAt DateTime @updatedAt
 }
 
-
-
 // ============================================
 // USER
 // ============================================
 
 model user {
-  id             Int      @id @default(autoincrement())
-  name           String
-  birthday DateTime
-  cpf            String   @db.VarChar(11)
-  isDelete       Boolean  @default(false)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  name      String
+  birthday  DateTime
+  cpf       String   @db.VarChar(11)
+  isDelete  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   genderId Int
   gender   gender @relation(fields: [genderId], references: [id])
-  @@index([genderId])
 
   roleId String
-  role   role   @relation(fields: [roleId], references: [id])
-  @@index([roleId])
+  role   role @relation(fields: [roleId], references: [id])
 
   authentication authentication?
   refresh_tokens refresh_token[]
-  active_tokens   active_token[] 
+  active_tokens  active_token[]
   phones         phone[]
   addresses      address[]
   cards          card[]
@@ -158,26 +150,24 @@ model user {
 model gender {
   id        Int      @id @default(autoincrement())
   name      String   @unique
-  isDelete    Boolean  @default(false)
+  isDelete  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   users user[]
 }
 
-
-
 // ============================================
 // CONTACT & ADDRESS
 // ============================================
 
 model phone {
-  id        Int        @id @default(autoincrement())
-  ddd       String     @db.VarChar(2)
-  number    String     @db.VarChar(9)
-  type      phone_type
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id        Int      @id @default(autoincrement())
+  ddd       String   @db.VarChar(2)
+  number    String   @db.VarChar(9)
+  type      PhoneType
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   userId Int
   user   user @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -187,35 +177,36 @@ model phone {
 }
 
 model address {
-  id            Int      @id @default(autoincrement())
-  nickname      String
-  street        String
-  number  String
-  complement    String?
-  neighborhood  String
-  zip           String   @db.VarChar(8)
-  cityId        Int
-  city          city     @relation(fields: [cityId], references: [id])
-  isDelete      Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id           Int      @id @default(autoincrement())
+  nickname     String
+  street       String
+  number       String
+  complement   String?
+  neighborhood String
+  zip          String   @db.VarChar(8)
+
+  cityId Int
+  city   city @relation(fields: [cityId], references: [id])
+
+  isDelete  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   userId Int
   user   user @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId])
-  @@index([cityId])
-
   sales sale[]
 
+  @@index([userId])
+  @@index([cityId])
   @@unique([nickname, userId])
 }
 
 model city {
-  id        Int       @id @default(autoincrement())
-  name      String
-  stateId   Int
-  state     state @relation(fields: [stateId], references: [id])
+  id      Int    @id @default(autoincrement())
+  name    String
+  stateId Int
+  state   state @relation(fields: [stateId], references: [id])
 
   addresses address[]
 
@@ -230,24 +221,22 @@ model state {
   cities city[]
 }
 
-
-
-
 // ============================================
 // CARD
 // ============================================
 
 model card {
-  id        Int        @id @default(autoincrement())
-  nickname  String
-  holder    String
-  brand     card_brand
-  last4     String     @db.VarChar(4)
-  token     String     @unique
-  primary   Boolean    @default(false)
-  isDelete   Boolean    @default(false)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id       Int        @id @default(autoincrement())
+  nickname String
+  holder   String
+  brand    CardBrand
+  last4    String     @db.VarChar(4)
+  token    String     @unique
+  primary  Boolean    @default(false)
+  isDelete Boolean    @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   userId Int
   user   user @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -255,7 +244,6 @@ model card {
   payments payment[]
 
   @@index([userId])
-
   @@unique([nickname, userId])
 }
 
@@ -264,17 +252,18 @@ model card {
 // ============================================
 
 model product {
-  id            Int                   @id @default(autoincrement())
-  name          String                @unique
-  price         Float
-  salePrice         Float @default(0)
-  images         String[]
-  description   String?
-  stock         Int                   @default(0)
-  active        Boolean               @default(true)
-  isDelete      Boolean               @default(false)
-  createdAt     DateTime              @default(now())
-  updatedAt     DateTime              @updatedAt
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  price       Float
+  salePrice   Float   @default(0)
+  images      String[]
+  description String?
+  stock       Int     @default(0)
+  active      Boolean @default(true)
+  isDelete    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   subCategories product_sub_category[]
   cartItems     cart_item[]
@@ -282,31 +271,32 @@ model product {
 }
 
 model sub_category {
-  id         Int                    @id @default(autoincrement())
-  name       String                 @unique
-  isDelete   Boolean                @default(false)
-  createdAt  DateTime               @default(now())
-  updatedAt  DateTime               @updatedAt
+  id        Int    @id @default(autoincrement())
+  name      String @unique
+  isDelete  Boolean @default(false)
 
   categoryId Int
-  category   category               @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category   category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
-  products   product_sub_category[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products product_sub_category[]
 }
 
 model product_sub_category {
   productId     Int
-  subCategoryId Int
+  subCategoryId  Int
 
-  product     product      @relation(fields: [productId], references: [id], onDelete: Cascade)
-  subCategory sub_category @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
+  product     product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  subCategory sub_category  @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
 
-  @@id([productId, subCategoryId]) 
+  @@id([productId, subCategoryId])
 }
 
 model category {
-  id       Int       @id @default(autoincrement())
-  name     String    @unique
+  id        Int    @id @default(autoincrement())
+  name      String @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -314,15 +304,15 @@ model category {
 }
 
 model cart_item {
-  id        Int @id @default(autoincrement())
-  quantity  Int @default(1)
-  inStock     Boolean @default(true)
+  id       Int @id @default(autoincrement())
+  quantity Int @default(1)
+  inStock  Boolean @default(true)
 
-  userId    Int
-  user    user    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+  user   user @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   productId Int
-  product product @relation(fields: [productId], references: [id], onDelete: Restrict)
+  product   product @relation(fields: [productId], references: [id], onDelete: Restrict)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -335,31 +325,32 @@ model cart_item {
 // ============================================
 
 model sale {
-  id         Int      @id @default(autoincrement())
-  finalPrice Float
-  totalPrice Float
-  status     sale_status @default(processing)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          Int        @id @default(autoincrement())
+  finalPrice  Float
+  totalPrice  Float
+  status      SaleStatus @default(processing)
   cancelReason String?
 
-  userId     Int
-  user       user     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  addressId  Int
-  address    address  @relation(fields: [addressId], references: [id])
+  userId Int
+  user   user @relation(fields: [userId], references: [id])
 
-  items      sale_item[]
-  payment    payment?
-  coupons     sale_coupon[]
+  addressId Int
+  address   address @relation(fields: [addressId], references: [id])
+
+  items   sale_item[]
+  payment payment?
+  coupons sale_coupon[]
 }
 
 model sale_item {
-  quantity  Int
-  price     Float
+  quantity Int
+  price    Float
 
-  saleId    Int
-  sale      sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  saleId Int
+  sale   sale @relation(fields: [saleId], references: [id], onDelete: Cascade)
 
   productId Int
   product   product @relation(fields: [productId], references: [id])
@@ -368,15 +359,17 @@ model sale_item {
 }
 
 model payment {
-  id            Int   @id @default(autoincrement())
-  saleId        Int   @unique
-  type   payment_type
-  status payment_status
-  cardId        Int?
-  amount        Float
+  id     Int @id @default(autoincrement())
+  saleId Int @unique
+
+  type   PaymentType
+  status PaymentStatus
+  amount Float
+
+  cardId Int?
+  card   card? @relation(fields: [cardId], references: [id])
 
   sale sale @relation(fields: [saleId], references: [id], onDelete: Cascade)
-  card card? @relation(fields: [cardId], references: [id])
 }
 
 // ============================================
@@ -384,21 +377,21 @@ model payment {
 // ============================================
 
 model coupon {
-  id        Int     @id @default(autoincrement())
-  code      String  @unique
-  type      coupon_type
-  discount  Float
-  maxUses   Int     @default(1)
+  id       Int        @id @default(autoincrement())
+  code     String     @unique
+  type     CouponType
+  discount Float
+  maxUses  Int @default(1)
 
-  sales     sale_coupon[]
+  sales sale_coupon[]
 }
 
 model sale_coupon {
-  saleId    Int  
-  couponId  Int
+  saleId   Int
+  couponId Int
 
-  type      coupon_type
-  discount  Float?
+  type     CouponType
+  discount Float?
 
   sale   sale   @relation(fields: [saleId], references: [id])
   coupon coupon @relation(fields: [couponId], references: [id])
