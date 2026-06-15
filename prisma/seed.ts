@@ -543,6 +543,291 @@ async function main() {
         }); 
     }
 
+    // Cidade para os endereços
+    const sp = await prisma.state.findUnique({
+        where: { abbreviation: 'SP' }
+    });
+
+    if (!sp) throw new Error('Estado SP não encontrado');
+
+    const city = await prisma.city.upsert({
+        where: {
+            name_stateId: {
+                name: 'Mogi das Cruzes',
+                stateId: sp.id
+            }
+        },
+        update: {},
+        create: {
+            name: 'Mogi das Cruzes',
+            stateId: sp.id
+        }
+    });
+
+    const customerRole = await prisma.role.findUnique({
+        where: { name: RoleName.USER }
+    });
+
+    const gender = await prisma.gender.findFirst();
+
+    if (!customerRole || !gender) {
+        throw new Error('Role ou gênero não encontrado');
+    }
+
+    const defaultPassword = await bcrypt.hash('123@Pass', 10);
+
+    // =====================
+    // USUÁRIO 1
+    // =====================
+    const joaoAuth = await prisma.authentication.upsert({
+        where: { email: 'joao@gmail.com' },
+        update: {},
+        create: {
+            email: 'joao@gmail.com',
+            password: defaultPassword,
+            user: {
+                create: {
+                    name: 'João Silva',
+                    birthday: new Date('1995-05-10'),
+                    cpf: '11111111111',
+                    genderId: gender.id,
+                    roleId: customerRole.id,
+
+                    phones: {
+                        create: {
+                            ddd: '11',
+                            number: '999999991',
+                            type: 'cellphone'
+                        }
+                    },
+
+                    addresses: {
+                        create: {
+                            nickname: 'Casa',
+                            street: 'Rua das Flores',
+                            number: '123',
+                            neighborhood: 'Centro',
+                            zip: '08700000',
+                            cityId: city.id
+                        }
+                    }
+                }
+            }
+        },
+        include: {
+            user: {
+                include: {
+                    addresses: true
+                }
+            }
+        }
+    });
+
+    // =====================
+    // USUÁRIO 2
+    // =====================
+    const mariaAuth = await prisma.authentication.upsert({
+        where: { email: 'maria@gmail.com' },
+        update: {},
+        create: {
+            email: 'maria@gmail.com',
+            password: defaultPassword,
+            user: {
+                create: {
+                    name: 'Maria Oliveira',
+                    birthday: new Date('1998-02-15'),
+                    cpf: '22222222222',
+                    genderId: gender.id,
+                    roleId: customerRole.id,
+
+                    phones: {
+                        create: {
+                            ddd: '11',
+                            number: '999999992',
+                            type: 'cellphone'
+                        }
+                    },
+
+                    addresses: {
+                        create: {
+                            nickname: 'Casa',
+                            street: 'Av. Japão',
+                            number: '456',
+                            neighborhood: 'Centro',
+                            zip: '08700000',
+                            cityId: city.id
+                        }
+                    }
+                }
+            }
+        },
+        include: {
+            user: {
+                include: {
+                    addresses: true
+                }
+            }
+        }
+    });
+
+    // =====================
+    // USUÁRIO 3
+    // =====================
+    const pedroAuth = await prisma.authentication.upsert({
+        where: { email: 'pedro@gmail.com' },
+        update: {},
+        create: {
+            email: 'pedro@gmail.com',
+            password: defaultPassword,
+            user: {
+                create: {
+                    name: 'Pedro Santos',
+                    birthday: new Date('1992-11-20'),
+                    cpf: '33333333333',
+                    genderId: gender.id,
+                    roleId: customerRole.id,
+
+                    phones: {
+                        create: {
+                            ddd: '11',
+                            number: '999999993',
+                            type: 'cellphone'
+                        }
+                    },
+
+                    addresses: {
+                        create: {
+                            nickname: 'Casa',
+                            street: 'Rua Ipiranga',
+                            number: '789',
+                            neighborhood: 'Vila Oliveira',
+                            zip: '08700000',
+                            cityId: city.id
+                        }
+                    }
+                }
+            }
+        },
+        include: {
+            user: {
+                include: {
+                    addresses: true
+                }
+            }
+        }
+    });
+
+    // Produtos para as compras
+    const racao = await prisma.product.findFirst({
+        where: {
+            name: {
+                contains: 'Golden'
+            }
+        }
+    });
+
+    const brinquedo = await prisma.product.findFirst({
+        where: {
+            name: {
+                contains: 'Bola'
+            }
+        }
+    });
+
+    if (racao && brinquedo) {
+
+        // Compra do João
+        await prisma.sale.create({
+            data: {
+                userId: joaoAuth.user.id,
+                addressId: joaoAuth.user.addresses[0].id,
+
+                totalPrice: 199.80,
+                finalPrice: 179.80,
+                status: 'delivered',
+
+                items: {
+                    create: [
+                        {
+                            productId: racao.id,
+                            quantity: 1,
+                            price: racao.salePrice
+                        },
+                        {
+                            productId: brinquedo.id,
+                            quantity: 1,
+                            price: brinquedo.salePrice
+                        }
+                    ]
+                },
+
+                payment: {
+                    create: {
+                        type: 'pix',
+                        status: 'paid',
+                        amount: 179.80
+                    }
+                }
+            }
+        });
+
+        // Compra da Maria
+        await prisma.sale.create({
+            data: {
+                userId: mariaAuth.user.id,
+                addressId: mariaAuth.user.addresses[0].id,
+
+                totalPrice: racao.salePrice,
+                finalPrice: racao.salePrice,
+                status: 'shipped',
+
+                items: {
+                    create: [{
+                        productId: racao.id,
+                        quantity: 1,
+                        price: racao.salePrice
+                    }]
+                },
+
+                payment: {
+                    create: {
+                        type: 'card',
+                        status: 'paid',
+                        amount: racao.salePrice
+                    }
+                }
+            }
+        });
+
+        // Compra do Pedro
+        await prisma.sale.create({
+            data: {
+                userId: pedroAuth.user.id,
+                addressId: pedroAuth.user.addresses[0].id,
+
+                totalPrice: brinquedo.salePrice,
+                finalPrice: brinquedo.salePrice,
+                status: 'processing',
+
+                items: {
+                    create: [{
+                        productId: brinquedo.id,
+                        quantity: 2,
+                        price: brinquedo.salePrice
+                    }]
+                },
+
+                payment: {
+                    create: {
+                        type: 'pix',
+                        status: 'pending',
+                        amount: brinquedo.salePrice * 2
+                    }
+                }
+            }
+        });
+    }
+
     console.log('Seed concluído!');
 }
 

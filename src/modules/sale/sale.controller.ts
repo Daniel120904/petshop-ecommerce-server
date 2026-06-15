@@ -71,7 +71,8 @@ class SaleController {
                             product: true
                         }
                     },
-                    payment: true
+                    payment: true,
+                    user: true
                 },
                 orderBy,
                 pagination: {
@@ -80,7 +81,7 @@ class SaleController {
                 }
             }
         )
-
+        
         return res.status(200).json({
             data: result
         })
@@ -89,7 +90,7 @@ class SaleController {
     async getUserSales(req: ValidatedRequest<typeof saleSchema.getUserSales>, res: Response) {
         const { orderBy, page, pageSize } = req.validated;
         const { userId } = req.user!;
-
+        console.log("oi")
         const result = await saleRepository.findMany(
             {
                 userId
@@ -101,7 +102,8 @@ class SaleController {
                             product: true
                         }
                     },
-                    payment: true
+                    payment: true,
+                    user: true
                 },
                 orderBy,
                 pagination: {
@@ -110,7 +112,7 @@ class SaleController {
                 }
             }
         )
-
+        console.log(result)
         return res.status(200).json({
             data: result
         })
