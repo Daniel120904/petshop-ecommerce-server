@@ -5,6 +5,8 @@ import addressRepository from "../address/address.repository";
 import couponService from "../coupon/coupon.service";
 import productRepository from "../product/product.repository";
 import saleRepository from "./sale.repository";
+import { shippingService } from '../../infrastructure/melhor-envio/shippingService';
+import cartRepository from '../product/cart.repository';
 
 class SaleService {
     async create(req: {
@@ -41,6 +43,8 @@ class SaleService {
             throw new Error('Endereço não encontrado');
         }
 
+        const freight = await shippingService.getOptions(address.id)
+ 
         let totalPrice = 0;
 
         for(const reqProduct of req.products) {
@@ -67,7 +71,7 @@ class SaleService {
             }
         }
 
-        const finalPrice = Math.max(totalPrice - discount, 0);
+        const finalPrice = Math.max(totalPrice - discount + freight, 0);
 
         if (req.paymentType === 'card' && !req.cardId) {
             throw new Error('Cartão é obrigatório para pagamento com cartão');
@@ -78,6 +82,7 @@ class SaleService {
                 addressId: req.addressId,
                 totalPrice,
                 finalPrice,
+                freight,
                 payment: {
                     create: {
                         type: req.paymentType,
@@ -100,6 +105,10 @@ class SaleService {
                 userId: req.userId,
             }
         );
+
+        await cartRepository.deleteMany({
+            userId: req.userId
+        })
 
         return sale;
     }

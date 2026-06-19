@@ -1,3 +1,5 @@
+import { shippingService } from "../../infrastructure/melhor-envio/shippingService";
+import { validateZip } from "../../utils/schemas";
 import addressRepository from "./address.repository";
 import cityRepository from "./city.repository";
 import stateRepository from "./state.repository";
@@ -29,6 +31,8 @@ class AddressService {
         if (!state) throw new Error(`Estado '${data.state}' não encontrado`);
 
         const city = await cityRepository.upsert(data.city, state.id);
+
+        await shippingService.validateZipExists(data.zip)
 
         return await addressRepository.create({
             userId,

@@ -326,8 +326,9 @@ model cart_item {
 
 model sale {
   id          Int        @id @default(autoincrement())
-  finalPrice  Float
+  finalPrice  Float //frete incluso
   totalPrice  Float
+  freight Float
   status      SaleStatus @default(processing)
   cancelReason String?
 

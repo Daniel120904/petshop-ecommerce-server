@@ -607,7 +607,7 @@ async function main() {
                             street: 'Rua das Flores',
                             number: '123',
                             neighborhood: 'Centro',
-                            zip: '08700000',
+                            zip: '02011000',
                             cityId: city.id
                         }
                     }
@@ -654,7 +654,7 @@ async function main() {
                             street: 'Av. Japão',
                             number: '456',
                             neighborhood: 'Centro',
-                            zip: '08700000',
+                            zip: '01310100',
                             cityId: city.id
                         }
                     }
@@ -701,7 +701,7 @@ async function main() {
                             street: 'Rua Ipiranga',
                             number: '789',
                             neighborhood: 'Vila Oliveira',
-                            zip: '08700000',
+                            zip: '01001000',
                             cityId: city.id
                         }
                     }
@@ -744,6 +744,7 @@ async function main() {
 
                 totalPrice: 199.80,
                 finalPrice: 179.80,
+                freight: 15,
                 status: 'delivered',
 
                 items: {
@@ -779,6 +780,7 @@ async function main() {
 
                 totalPrice: racao.salePrice,
                 finalPrice: racao.salePrice,
+                freight: 12,
                 status: 'shipped',
 
                 items: {
@@ -807,6 +809,7 @@ async function main() {
 
                 totalPrice: brinquedo.salePrice,
                 finalPrice: brinquedo.salePrice,
+                freight: 15,
                 status: 'processing',
 
                 items: {
