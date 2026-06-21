@@ -39,7 +39,7 @@ class CouponService {
         )
 
         if(!coupon) return { status: false };
-        if(coupon.maxUses >= coupon.sales.length) return { status: false };
+        if(coupon.maxUses <= coupon.sales.length) return { status: false };
 
         return {
             status: true,
