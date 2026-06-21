@@ -31,5 +31,9 @@ export const saleSchema = {
         userId: coerceId('Usuario')
     }),
 
-    getSales: validatePagination()
+    getSales: validatePagination(),
+
+    checkFreight: z.object({
+        addressId: coerceId('Endereço')
+    })
 };

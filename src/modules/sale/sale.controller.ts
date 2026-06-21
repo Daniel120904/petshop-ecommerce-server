@@ -4,6 +4,8 @@ import { Request, Response } from 'express';
 import saleService from "./sale.service";
 import saleRepository from "./sale.repository";
 import { PermissionLevel } from "../../utils/constants/permission.constants";
+import { shippingService } from "../../infrastructure/melhor-envio/shippingService";
+import addressRepository from "../address/address.repository";
 
 class SaleController {
     async createSale(req: ValidatedRequest<typeof saleSchema.createSale>, res: Response) {
@@ -90,7 +92,7 @@ class SaleController {
     async getUserSales(req: ValidatedRequest<typeof saleSchema.getUserSales>, res: Response) {
         const { orderBy, page, pageSize } = req.validated;
         const { userId } = req.user!;
-        console.log("oi")
+
         const result = await saleRepository.findMany(
             {
                 userId
@@ -112,9 +114,29 @@ class SaleController {
                 }
             }
         )
-        console.log(result)
+
         return res.status(200).json({
             data: result
+        })
+    }
+
+    async checkFreight(req: ValidatedRequest<typeof saleSchema.checkFreight>, res: Response) {
+        const { addressId }  = req.validated;
+        const { userId } = req.user!;
+
+        const address = await addressRepository.findUnique({
+            userId: userId,
+            id: addressId
+        })
+
+        if(!address) throw new Error("Endereço não encontrado")
+
+        const result = await shippingService.getOptions(address.id)
+
+        return res.status(200).json({
+            data: {
+                value: result
+            }
         })
     }
 }

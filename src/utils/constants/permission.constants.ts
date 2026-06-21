@@ -62,6 +62,7 @@ export const PERMISSIONS = {
             { path: '/sale', methods: ['POST', 'PATCH', 'GET'] },
             { path: '/sale/:userId', methods: ['GET'] },
             { path: '/sale/cancel', methods: ['PATCH'] },
+            { path: '/freight/check', methods: ['GET'] },
         ],
     },
     [PermissionLevel.MASTER]: {

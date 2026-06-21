@@ -10,5 +10,6 @@ router.patch("/sale", validate((req, res) => saleController.updateSaleStatus(req
 router.patch("/sale/cancel", validate((req, res) => saleController.cancelSale(req, res), saleSchema.cancelSale));
 router.get("/sale", validate((req, res) => saleController.getSales(req, res), saleSchema.getSales));
 router.get("/sale/:userId", validate((req, res) => saleController.getUserSales(req, res), saleSchema.getUserSales));
+router.get("/freight/check", validate((req, res) => saleController.checkFreight(req, res), saleSchema.checkFreight))
 
 export default router;
