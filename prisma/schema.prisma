@@ -383,6 +383,8 @@ model coupon {
   type     CouponType
   discount Float
   maxUses  Int @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   sales sale_coupon[]
 }
