@@ -131,12 +131,6 @@ class SaleService {
 
         if(!sale) throw new Error('Venda nao encontrada');
 
-        const flowWithoutCancel = removeTransitions(BASE_STATUS_FLOW, [SaleStatus.canceled]);
-
-        if (!flowWithoutCancel[sale.status].includes(req.status)) {
-            throw new Error('Status inválido');
-        }
-
         return await saleRepository.update(
             {
                 id: req.saleId
