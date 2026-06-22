@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { CouponType, PrismaClient } from '@prisma/client';
 import { RoleName } from '../src/utils/constants/role.constants';
 import { GenderName } from '../src/utils/constants/gender.constants';
 import bcrypt from 'bcrypt';
@@ -715,6 +715,72 @@ async function main() {
                 }
             }
         }
+    });
+
+    // =====================
+    // CUPONS
+    // =====================
+    const coupons = [
+        { code: 'BEMVINDO10', type: CouponType.percent, discount: 10, maxUses: 100 },
+        { code: 'FRETE15',    type: CouponType.value,   discount: 15, maxUses: 50  },
+        { code: 'PET20OFF',   type: CouponType.percent, discount: 20, maxUses: 30  },
+        { code: 'DESCONTO50', type: CouponType.value,   discount: 50, maxUses: 10  },
+    ];
+
+    for (const coupon of coupons) {
+        await prisma.coupon.upsert({
+            where: { code: coupon.code },
+            update: {},
+            create: coupon,
+        });
+    }
+
+    // =====================
+    // CARTÕES DOS USUÁRIOS
+    // =====================
+    const joaoUser = joaoAuth.user;
+    const mariaUser = mariaAuth.user;
+
+    await prisma.card.upsert({
+        where: { token: 'tok_joao_visa_4242' },
+        update: {},
+        create: {
+            nickname:  'Visa pessoal',
+            holder:    'JOAO SILVA',
+            brand:     'visa',
+            last4:     '4242',
+            token:     'tok_joao_visa_4242',
+            primary:   true,
+            userId:    joaoUser.id,
+        },
+    });
+
+    await prisma.card.upsert({
+        where: { token: 'tok_joao_master_1234' },
+        update: {},
+        create: {
+            nickname:  'Master débito',
+            holder:    'JOAO SILVA',
+            brand:     'mastercard',
+            last4:     '1234',
+            token:     'tok_joao_master_1234',
+            primary:   false,
+            userId:    joaoUser.id,
+        },
+    });
+
+    await prisma.card.upsert({
+        where: { token: 'tok_maria_elo_5678' },
+        update: {},
+        create: {
+            nickname:  'Elo principal',
+            holder:    'MARIA OLIVEIRA',
+            brand:     'elo',
+            last4:     '5678',
+            token:     'tok_maria_elo_5678',
+            primary:   true,
+            userId:    mariaUser.id,
+        },
     });
 
     // Produtos para as compras
