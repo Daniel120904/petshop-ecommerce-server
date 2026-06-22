@@ -38,6 +38,9 @@ type ExtractSelect<TClient extends PrismaDelegate> =
 type ExtractOrderBy<TClient extends PrismaDelegate> =
     Prisma.Args<TClient, 'findMany'> extends { orderBy?: infer O } ? O & object : object;
 
+type ExtractWhereUnique<TClient extends PrismaDelegate> =
+    Prisma.Args<TClient, 'delete'> extends { where: infer W } ? W & object : object;
+
 type Pagination = { page?: number; pageSize?: number };
 
 export abstract class TypedRepository<TClient extends PrismaDelegate> extends BaseRepository<
@@ -45,6 +48,7 @@ export abstract class TypedRepository<TClient extends PrismaDelegate> extends Ba
     ExtractCreate<TClient>,
     ExtractUpdate<TClient>,
     ExtractWhere<TClient>,
+    ExtractWhereUnique<TClient>,
     ExtractInclude<TClient>,
     ExtractSelect<TClient>,
     ExtractOrderBy<TClient>
@@ -93,17 +97,17 @@ export abstract class TypedRepository<TClient extends PrismaDelegate> extends Ba
 
     // findUnique
     async findUnique<TInc extends ExtractInclude<TClient>>(
-        where: ExtractWhere<TClient>,
+        where: ExtractWhereUnique<TClient>,
         options: { include: TInc; select?: never }
     ): Promise<WithInclude<TClient, TInc> | null>;
 
     async findUnique<TSel extends ExtractSelect<TClient>>(
-        where: ExtractWhere<TClient>,
+        where: ExtractWhereUnique<TClient>,
         options: { select: TSel; include?: never }
     ): Promise<WithSelect<TClient, TSel> | null>;
 
     async findUnique(
-        where: ExtractWhere<TClient>,
+        where: ExtractWhereUnique<TClient>,
         options?: { include?: never; select?: never }
     ): Promise<ExtractModel<TClient> | null>;
 
@@ -133,24 +137,33 @@ export abstract class TypedRepository<TClient extends PrismaDelegate> extends Ba
 
     // update
     async update<TInc extends ExtractInclude<TClient>>(
-        where: ExtractWhere<TClient>,
+        where: ExtractWhereUnique<TClient>,
         data: ExtractUpdate<TClient>,
         options: { include: TInc; select?: never }
     ): Promise<WithInclude<TClient, TInc>>;
 
     async update<TSel extends ExtractSelect<TClient>>(
-        where: ExtractWhere<TClient>,
+        where: ExtractWhereUnique<TClient>,
         data: ExtractUpdate<TClient>,
         options: { select: TSel; include?: never }
     ): Promise<WithSelect<TClient, TSel>>;
 
     async update(
-        where: ExtractWhere<TClient>,
+        where: ExtractWhereUnique<TClient>,
         data: ExtractUpdate<TClient>,
         options?: { include?: never; select?: never }
     ): Promise<ExtractModel<TClient>>;
 
     async update(where: any, data: any, options: any = {}): Promise<any> {
         return super.update(where, data, options);
+    }
+
+    //delete
+    async delete(
+        where: ExtractWhereUnique<TClient>
+    ): Promise<ExtractModel<TClient>>;
+
+    async delete(where: any): Promise<any> {
+        return super.delete(where);
     }
 }

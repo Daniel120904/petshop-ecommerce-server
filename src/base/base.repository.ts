@@ -30,6 +30,7 @@ export abstract class BaseRepository<
     TCreateInput,
     TUpdateInput,
     TWhereInput extends object = object,
+    TWhereUniqueInput extends object = object,
     TInclude extends object = object,
     TSelect extends object = object ,
     TOrderBy extends object = object
@@ -97,7 +98,7 @@ export abstract class BaseRepository<
     }
 
     async findUnique(
-        where: TWhereInput,
+        where: TWhereUniqueInput,
         options: FindOptions<TInclude, TSelect, TOrderBy> = {}
     ): Promise<any>  {
         return this.model.findUnique({
@@ -141,7 +142,7 @@ export abstract class BaseRepository<
     }
 
     async update<TOptions extends { include?: TInclude; select?: TSelect }>(
-        where: TWhereInput,
+        where: TWhereUniqueInput,
         data: TUpdateInput,
         options: TOptions = {} as TOptions
     ): Promise<any> {
@@ -170,10 +171,10 @@ export abstract class BaseRepository<
         });
     }
 
-    async delete(where: TWhereInput) : Promise<TModel> {
+    async delete(where: TWhereUniqueInput) : Promise<TModel> {
         if (!this.hasDeleteFlag) {
             await this.blockIfNotFound(where);
-            return this.model.delete({ where });
+            return this.model.delete({ where: this.resolveUniqueWhere(where) });
         }
 
         await this.blockIfDeleted(where);
@@ -214,24 +215,23 @@ export abstract class BaseRepository<
     /**
      * Bloqueia update/delete em um único registro já deletado.
      */
-    private async blockIfDeleted(where: TWhereInput) {
-        const record = await this.model.findFirst({ where });
+    private async blockIfNotFound(where: TWhereUniqueInput) {
+        const record = await this.model.findFirst({
+            where: this.resolveWhereFromUnique(where)
+        });
 
         if (!record) {
             throw new Error('Registro não encontrado');
-        }
-
-        if (record.isDelete === true) {
-            throw new Error('Operação não permitida: o registro já foi deletado');
         }
     }
 
-    private async blockIfNotFound(where: TWhereInput) {
-        const record = await this.model.findFirst({ where });
+    private async blockIfDeleted(where: TWhereUniqueInput) {
+        const record = await this.model.findFirst({
+            where: this.resolveWhereFromUnique(where) 
+        });
 
-        if (!record) {
-            throw new Error('Registro não encontrado');
-        }
+        if (!record) throw new Error('Registro não encontrado');
+        if (record.isDelete === true) throw new Error('Operação não permitida: o registro já foi deletado');
     }
 
     private async blockIfNoneFound(where: TWhereInput) {
@@ -281,31 +281,39 @@ export abstract class BaseRepository<
         }
     }
 
-    protected resolveUniqueWhere(where: TWhereInput): any {
-    const modelName = this.model.name; // ex: "cart_item"
+    protected resolveUniqueWhere(where: TWhereUniqueInput): any {
+        const modelName = this.model.name; 
 
-    // Busca o model no DMMF
-    const dmmfModel = Prisma.dmmf.datamodel.models.find(
-        m => m.name.toLowerCase() === modelName.toLowerCase()
-    );
+        // Busca o model no DMMF
+        const dmmfModel = Prisma.dmmf.datamodel.models.find(
+            m => m.name.toLowerCase() === modelName.toLowerCase()
+        );
 
-    if (!dmmfModel) return where;
+        if (!dmmfModel) return where;
 
-    // Busca o primeiro @@unique composto que todos os campos estão presentes no where
-    const compositeUnique = dmmfModel.uniqueIndexes.find(index =>
-        index.fields.length > 1 &&
-        index.fields.every(field => (where as any)[field] !== undefined)
-    );
+        // Busca o primeiro @@unique composto que todos os campos estão presentes no where
+        const compositeUnique = dmmfModel.uniqueIndexes.find(index =>
+            index.fields.length > 1 &&
+            index.fields.every(field => (where as any)[field] !== undefined)
+        );
 
-    if (!compositeUnique) return where;
+        if (!compositeUnique) return where;
 
-    // Monta a chave composta no formato que o Prisma espera
-    // ex: { userId_productId: { userId: 2, productId: 26 } }
-    const compositeKey = compositeUnique.fields.join('_');
-    const compositeValue = Object.fromEntries(
-        compositeUnique.fields.map(field => [field, (where as any)[field]])
-    );
+        const compositeKey = compositeUnique.fields.join('_');
+        const compositeValue = Object.fromEntries(
+            compositeUnique.fields.map(field => [field, (where as any)[field]])
+        );
 
-    return { [compositeKey]: compositeValue };
-}
+        return { [compositeKey]: compositeValue };
+    }
+
+    protected resolveWhereFromUnique(where: TWhereUniqueInput): TWhereInput {
+        for (const key of Object.keys(where as object)) {
+            const value = (where as any)[key];
+            if (typeof value === 'object' && value !== null && key.includes('_')) {
+                return value as unknown as TWhereInput;
+            }
+        }
+        return where as unknown as TWhereInput;
+    }
 }

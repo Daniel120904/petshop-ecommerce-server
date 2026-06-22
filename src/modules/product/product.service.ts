@@ -150,12 +150,12 @@ class ProductService {
         userId: number,
         productId: number
     }) {
-        return await cartRepository.delete(
-            {
-                userId: req.userId,
-                productId: req.productId
+        return await cartRepository.delete({
+            userId_productId: {
+                productId: req.productId,
+                userId: req.userId
             }
-        )
+        })
     }
 
     async updateCart(
@@ -165,6 +165,8 @@ class ProductService {
             quantity: number
         }[]
     ) {
+        console.log(userId)
+        console.log(items)
         const cart = await cartRepository.findMany({ userId });
         if (!cart.data.length) throw new Error("Carrinho não encontrado");
 
@@ -172,7 +174,7 @@ class ProductService {
 
         const existingProductIds = cartData.map(i => i.productId);
 
-        const toRemove = items.filter(i => i.quantity === 0).map(i => i.productId);
+        const toRemove = items.filter(i => i.quantity === 0);
 
         const toUpdate = items.filter(i =>
             i.quantity > 0 && existingProductIds.includes(i.productId)
@@ -187,15 +189,19 @@ class ProductService {
         await Promise.all([
             ...toRemove.map(i =>
                 cartRepository.delete({
-                    productId: i,
-                    userId
+                    userId_productId: {
+                        productId: i.productId,
+                        userId
+                    }
                 })
             ),
             ...toUpdate.map(i =>
                 cartRepository.update(
                     {
-                        productId: i.productId,
-                        userId,
+                        userId_productId: {
+                            productId: i.productId,
+                            userId
+                        }
                     },
                     {
                         quantity: i.quantity
