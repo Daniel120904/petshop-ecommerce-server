@@ -436,7 +436,7 @@ const products = [
 
 async function main() {
     await createApiUser();
-    
+
     // Roles
     for (const role of Object.values(RoleName) as string[]) {
         await prisma.role.upsert({
@@ -540,7 +540,7 @@ async function main() {
                     }
                 }
             }
-        }); 
+        });
     }
 
     // Cidade para os endereços
@@ -722,9 +722,9 @@ async function main() {
     // =====================
     const coupons = [
         { code: 'BEMVINDO10', type: CouponType.percent, discount: 10, maxUses: 100 },
-        { code: 'FRETE15',    type: CouponType.value,   discount: 15, maxUses: 50  },
-        { code: 'PET20OFF',   type: CouponType.percent, discount: 20, maxUses: 30  },
-        { code: 'DESCONTO50', type: CouponType.value,   discount: 50, maxUses: 10  },
+        { code: 'FRETE15', type: CouponType.value, discount: 15, maxUses: 50 },
+        { code: 'PET20OFF', type: CouponType.percent, discount: 20, maxUses: 30 },
+        { code: 'DESCONTO50', type: CouponType.value, discount: 50, maxUses: 10 },
     ];
 
     for (const coupon of coupons) {
@@ -745,13 +745,13 @@ async function main() {
         where: { token: 'tok_joao_visa_4242' },
         update: {},
         create: {
-            nickname:  'Visa pessoal',
-            holder:    'JOAO SILVA',
-            brand:     'visa',
-            last4:     '4242',
-            token:     'tok_joao_visa_4242',
-            primary:   true,
-            userId:    joaoUser.id,
+            nickname: 'Visa pessoal',
+            holder: 'JOAO SILVA',
+            brand: 'visa',
+            last4: '4242',
+            token: 'tok_joao_visa_4242',
+            primary: true,
+            userId: joaoUser.id,
         },
     });
 
@@ -759,13 +759,13 @@ async function main() {
         where: { token: 'tok_joao_master_1234' },
         update: {},
         create: {
-            nickname:  'Master débito',
-            holder:    'JOAO SILVA',
-            brand:     'mastercard',
-            last4:     '1234',
-            token:     'tok_joao_master_1234',
-            primary:   false,
-            userId:    joaoUser.id,
+            nickname: 'Master débito',
+            holder: 'JOAO SILVA',
+            brand: 'mastercard',
+            last4: '1234',
+            token: 'tok_joao_master_1234',
+            primary: false,
+            userId: joaoUser.id,
         },
     });
 
@@ -773,13 +773,13 @@ async function main() {
         where: { token: 'tok_maria_elo_5678' },
         update: {},
         create: {
-            nickname:  'Elo principal',
-            holder:    'MARIA OLIVEIRA',
-            brand:     'elo',
-            last4:     '5678',
-            token:     'tok_maria_elo_5678',
-            primary:   true,
-            userId:    mariaUser.id,
+            nickname: 'Elo principal',
+            holder: 'MARIA OLIVEIRA',
+            brand: 'elo',
+            last4: '5678',
+            token: 'tok_maria_elo_5678',
+            primary: true,
+            userId: mariaUser.id,
         },
     });
 
@@ -868,8 +868,13 @@ async function main() {
         });
 
         // Compra do Pedro
+
+        const ontem = new Date();
+        ontem.setDate(ontem.getDate() - 1);
+
         await prisma.sale.create({
             data: {
+                createdAt: ontem,
                 userId: pedroAuth.user.id,
                 addressId: pedroAuth.user.addresses[0].id,
 
