@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '../../core/database/prisma.client';
 
 class CardRepository extends TypedRepository<typeof prisma.card> {
+    protected hasDeleteFlag = true;
     protected model = prisma.card;
 
     protected async beforeCreate(data: Prisma.cardUncheckedCreateInput) {

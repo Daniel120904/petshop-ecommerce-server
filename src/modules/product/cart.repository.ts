@@ -2,6 +2,7 @@ import { TypedRepository } from '../../base/base.typed-repository';
 import { prisma } from '../../core/database/prisma.client';
 
 class CartRepository extends TypedRepository<typeof prisma.cart_item> {
+    protected hasDeleteFlag = true;
     protected model = prisma.cart_item;
 }
 
