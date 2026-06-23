@@ -9,7 +9,7 @@ import addressRepository from "../address/address.repository";
 
 class SaleController {
     async createSale(req: ValidatedRequest<typeof saleSchema.createSale>, res: Response) {
-        const { addressId, coupons, paymentType, products, cardId } = req.validated;
+        const { addressId, coupon, paymentType, products, cardId } = req.validated;
         const { userId } = req.user!
 
         const result = await saleService.create({
@@ -18,7 +18,7 @@ class SaleController {
             products,
             userId,
             cardId,
-            coupons
+            coupon
         });
 
         return res.status(200).json({
@@ -70,7 +70,7 @@ class SaleController {
                 include: {
                     items: {
                         include: {
-                            product: true
+                            product: true,    
                         }
                     },
                     payment: true,

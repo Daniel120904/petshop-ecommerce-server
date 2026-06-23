@@ -7,13 +7,14 @@ import productRepository from "../product/product.repository";
 import saleRepository from "./sale.repository";
 import { shippingService } from '../../infrastructure/melhor-envio/shippingService';
 import cartRepository from '../product/cart.repository';
+import { prisma } from '../../core/database/prisma.client';
 
 class SaleService {
     async create(req: {
         userId: number,
         addressId: number,
         cardId?: number,
-        coupons?: string[],
+        coupon?: string,
         products: {
             productId: number,
             quantity: number
@@ -30,6 +31,26 @@ class SaleService {
 
         if(products.data.length !== productIds.length) {
             throw new Error('Produto não encontrado');
+        }
+
+        for (const requestedProduct of req.products) {
+            const product = products.data.find(
+                p => p.id === requestedProduct.productId
+            );
+
+            if (!product) {
+                const error: any = new Error('Produto não encontrado');
+                error.status = 409;
+
+                throw error;
+            }
+
+            if (product.stock < requestedProduct.quantity) {
+                const error: any = new Error(`Estoque insuficiente para o produto ${product.name}`);
+                error.status = 409;
+
+                throw error;
+            }
         }
 
         const address = await addressRepository.findUnique(
@@ -54,20 +75,18 @@ class SaleService {
 
         let discount = 0;
 
-        if(req.coupons?.length) {
-            for(const code of req.coupons) {
-                const { coupon } = await couponService.check(code);
-                if(!coupon) {
-                    throw new Error(`${code}: Cupom inválido`);
-                }
+        if(req.coupon) {
+            const { coupon } = await couponService.check(req.coupon);
+            if(!coupon) {
+                throw new Error(`${req.coupon}: Cupom inválido`);
+            }
 
-                if(coupon.type === 'percent') {
-                    discount += totalPrice * (coupon.discount / 100);
-                }
+            if(coupon.type === 'percent') {
+                discount += totalPrice * (coupon.discount / 100);
+            }
 
-                if(coupon.type === 'value') {
-                    discount += coupon.discount;
-                }
+            if(coupon.type === 'value') {
+                discount += coupon.discount;
             }
         }
 
@@ -77,40 +96,61 @@ class SaleService {
             throw new Error('Cartão é obrigatório para pagamento com cartão');
         }
 
-        const sale = await saleRepository.create(
-            {
-                addressId: req.addressId,
-                totalPrice,
-                finalPrice,
-                freight,
-                payment: {
-                    create: {
-                        type: req.paymentType,
-                        cardId: req.cardId,
-                        amount: finalPrice,
-                        status: 'pending'
+        await prisma.$transaction(async (tx) => {
+            const sale = await tx.sale.create({
+                data: {
+                    addressId: req.addressId,
+                    totalPrice,
+                    finalPrice,
+                    freight,
+                    payment: {
+                        create: {
+                            type: req.paymentType,
+                            cardId: req.cardId,
+                            amount: finalPrice,
+                            status: 'pending'
+                        }
+                    },
+                    items: {
+                        create: req.products.map(p => {
+                            const product = products.data.find(
+                                prod => prod.id === p.productId
+                            )!;
+
+                            return {
+                                productId: p.productId,
+                                quantity: p.quantity,
+                                price: product.salePrice > 0
+                                    ? product.salePrice
+                                    : product.price
+                            };
+                        })
+                    },
+                    userId: req.userId,
+                }
+            });
+
+            for (const item of req.products) {
+                await tx.product.update({
+                    where: {
+                        id: item.productId
+                    },
+                    data: {
+                        stock: {
+                            decrement: item.quantity
+                        }
                     }
-                },
-                items: {
-                    create: req.products.map(p => {
-                        const product = products.data.find(prod => prod.id === p.productId)!;
-
-                        return {
-                            productId: p.productId,
-                            quantity: p.quantity,
-                            price: product?.salePrice > 0 ? product.salePrice : product.price
-                        };
-                    })
-                },
-                userId: req.userId,
+                });
             }
-        );
 
-        await cartRepository.deleteMany({
-            userId: req.userId
-        })
+            await tx.cart_item.deleteMany({
+                where: {
+                    userId: req.userId
+                }
+            });
 
-        return sale;
+            return sale;
+        });
     }
 
     async updateStatus(req: {

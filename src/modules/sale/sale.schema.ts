@@ -11,7 +11,7 @@ export const saleSchema = {
                 quantity: z.number().int().positive()
             })
         ),
-        coupons: z.array(z.string()).optional(),
+        coupon: z.string().optional(),
         addressId: coerceId('Endereco'),
         paymentType: enumFromString(PaymentType),
         cardId: coerceId('Cartao').optional(),

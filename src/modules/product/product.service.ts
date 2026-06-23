@@ -125,17 +125,41 @@ class ProductService {
             },
             {
                 include: {
-                    cartItems: {
-                        where: {
-                            userId: req.userId
-                        }
-                    }
+                    cartItems: true
                 }
             }
         );
-
+    
         if(!product) throw new Error("Produto nao disponivel");
-        if(product.cartItems.length) throw new Error("Produto ja esta no carrinho do usuario");
+
+        const cartItem = product.cartItems.find(
+            item => item.userId === req.userId
+        );
+
+        const currentQuantity = cartItem?.quantity ?? 0;
+
+        if(product.stock - currentQuantity - req.quantity < 0){
+            const error: any = new Error(`Estoque insuficiente`);
+            error.status = 409;
+
+            throw error;
+        }
+
+        if(cartItem) {
+            let quantity = req.quantity + product.cartItems?.[0]?.quantity;
+
+            return await cartRepository.update(
+                {
+                    userId_productId: {
+                        productId: req.productId,
+                        userId: req.userId,
+                    }
+                },
+                {
+                    quantity
+                }
+            )
+        }
 
         return await cartRepository.create(
             {
@@ -165,8 +189,6 @@ class ProductService {
             quantity: number
         }[]
     ) {
-        console.log(userId)
-        console.log(items)
         const cart = await cartRepository.findMany({ userId });
         if (!cart.data.length) throw new Error("Carrinho não encontrado");
 
@@ -183,8 +205,6 @@ class ProductService {
         const toAdd = items.filter(i =>
             i.quantity > 0 && !existingProductIds.includes(i.productId)
         );
-
-        let result;
 
         await Promise.all([
             ...toRemove.map(i =>

@@ -19,7 +19,7 @@ registerRoutes(app);
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(`[${req.method} ${req.path}]`, err);
   res.status(err.status || 500).json({
-    message: err.message || "Internal Server Error",
+    message: err || "Internal Server Error",
   });
 });
 
